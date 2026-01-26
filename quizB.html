@@ -1,98 +1,131 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QCM B - UAE 2 : Soins Intensif Aide Médicale Urgente (SIAMU)</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        body { font-family:Arial,sans-serif; background:#f8f9fa; color:#000; padding:20px; }
-        .container { max-width:900px; margin:auto; background:#fff; padding:30px; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.1); }
-        h1 { color:#C64E4F; text-align:center; margin-bottom:20px; }
-        .question { margin:30px 0; font-size:1.25rem; font-weight:bold; }
-        .option { margin:12px 0; padding:12px; border:1px solid #ddd; border-radius:8px; cursor:pointer; transition:0.2s; }
-        .option:hover { background:#f0f8ff; }
-        button { background:#C64E4F; color:white; padding:16px 40px; border:none; border-radius:8px; font-size:1.3rem; cursor:pointer; margin:30px auto; display:block; }
-        button:disabled { background:#aaa; cursor:not-allowed; }
-        #result { margin-top:40px; font-size:1.6rem; text-align:center; font-weight:bold; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QCM B - UAE 2 : Soins Intensif Aide Médicale Urgente (SIAMU)</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+body { font-family:'Arial',sans-serif; background:#f8f9fa; padding:20px; }
+.container { max-width:960px; margin:auto; background:#fff; padding:30px; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.08); }
+h1 { color:#C64E4F; text-align:center; margin-bottom:30px; }
+.question { margin:30px 0; font-weight:bold; }
+.option { display:block; margin:15px 0; padding:15px; border:1px solid #ccc; border-radius:8px; cursor:pointer; }
+button { background:#C64E4F; color:#fff; padding:15px 40px; border:none; border-radius:8px; font-size:1.2rem; cursor:pointer; margin:40px auto; display:block; }
+button:disabled { background:#aaa; cursor:not-allowed; }
+#result { margin-top:30px; font-size:1.4rem; text-align:center; font-weight:bold; }
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1>QCM B - UAE 2 : Soins Intensif Aide Médicale Urgente (SIAMU)</h1>
-        <div id="quiz"></div>
-        <button id="submit">Valider mes réponses</button>
-        <div id="result"></div>
-    </div>
 
-    <script>
-        const supabase = Supabase.createClient('https://sevrfgivcpefyykuffti.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNldnJmZ2l2Y3BlZnl5a3VmZnRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5NDI1NTMsImV4cCI6MjA3ODUxODU1M30.YZnkSHsVWKQEhfU7xYfWyTFmtkM28Zuzdu7Y1sjBXQc');
+<div class="container">
+<h1>QCM B - UAE 2 : Soins Intensif Aide Médicale Urgente (SIAMU)</h1>
+<div id="quiz"></div>
+<button id="submit">Valider mes réponses</button>
+<div id="result"></div>
+</div>
 
-        const user = localStorage.getItem('currentUser');
-        if (!user) window.location.href = 'login.html';
+<script>
+/* ===================== SUPABASE ===================== */
+const supabaseUrl = 'https://sevrfgivcpefyykuffti.supabase.co';
+const supabaseKey = 'VOTRE_SUPABASE_KEY_ICI';
+const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-        // Vérifie si le QCM A est validé
-        (async () => {
-            const { data } = await supabase.from('users').select('evaluationA').eq('user', user).single();
-            if (data.evaluationA < 12) {
-                document.getElementById('result').innerHTML = 'Vous devez valider le QCM A avant de continuer.';
+/* ===================== AUTH ===================== */
+const currentUser = localStorage.getItem('currentUser');
+if(!currentUser) location.href='login.html';
+
+/* ===================== QUESTIONS ===================== */
+const questionsPool = [
+{ q:"Quelle est la fréquence des compressions en RCP avancée ?", o:["80-100/min","100-120/min","120-140/min","140-160/min"], a:"100-120/min" },
+{ q:"Quelle est la profondeur des compressions en RCP avancée ?", o:["3-4cm","4-5cm","5-6cm","6-7cm"], a:"5-6cm" },
+{ q:"Quel est le ratio compressions/ventilations chez un patient intubé ?", o:["30:2","15:2","Continu","60:4"], a:"Continu" },
+{ q:"Quelle dose d'adrénaline IV pour FV réfractaire ?", o:["0.5mg","1mg","2mg","3mg"], a:"1mg" },
+{ q:"Quel antiarythmique pour FV réfractaire ?", o:["Amiodarone 150mg","Amiodarone 300mg","Lidocaïne 1mg/kg","Atropine 0.5mg"], a:"Amiodarone 300mg" },
+{ q:"SpO2 minimale en urgence SIAMU ?", o:[">90%",">92%",">94%",">95%"], a:">94%" },
+{ q:"Score GCS minimal en urgence SIAMU ?", o:[">10",">12",">13",">15"], a:">13" },
+{ q:"PO2 normal artériel ?", o:["60-80","70-90","80-100","100-120"], a:"80-100" },
+{ q:"PCO2 normal artériel ?", o:["25-35","30-40","35-45","40-50"], a:"35-45" },
+{ q:"pH normal sanguin ?", o:["7.2-7.3","7.3-7.35","7.35-7.45","7.45-7.5"], a:"7.35-7.45" },
+{ q:"HCO3 normal ?", o:["20-22","22-26","24-28","26-30"], a:"22-26" },
+{ q:"Quel est le traitement initial pour un patient inconscient ?", o:["Cricoïde + OPA","Masque O2","2 voies IV","Hypothermie <35°C"], a:"Cricoïde + OPA" },
+{ q:"Quel débit O2 pour un patient en urgence ?", o:["5-10L","10-15L","15-20L","20-25L"], a:"10-15L" },
+{ q:"Quel volume IV initial ?", o:["250ml","500ml","750ml","1L"], a:"500ml" },
+{ q:"Quel paramètre observer au point D dans ABCDE ?", o:["TA","Pouls","Pupilles/GCS","SpO2"], a:"Pupilles/GCS" },
+{ q:"Comment gérer hypothermie <35°C ?", o:["Rien","Oxygène","Couverture","Adrénaline"], a:"Couverture" },
+{ q:"Quel médicament opioïde pour douleur ?", o:["Morphine","Furosémide","Atropine","Lidocaïne"], a:"Morphine" },
+{ q:"Dose morphine IV ?", o:["1-2mg","2-5mg","5-10mg","10-15mg"], a:"2-5mg" },
+{ q:"Quel antagoniste opioïdes ?", o:["Naloxone","Atropine","Amiodarone","Glucagon"], a:"Naloxone" },
+{ q:"Quelle surveillance obligatoire lors RCP avancée ?", o:["ECG","EtCO2","BIS","Toutes les réponses"], a:"Toutes les réponses" },
+{ q:"À quoi correspond "QRS" dans l'onde PQRST de l'ECG?", o:["Repolarisation Auriculaire", "Dépolarisation Ventriculaire", "Contraction Ventriculaire", "Toutes les réponses", "Aucunes des réponses"], a:"Toutes les réponses" },
+{ q:"À quoi correspond "P" dans l'onde PQRST de l'ECG?", o:["Dépolarisation Myocardique", "Dépolarisation Ventriculaire", "Dépolarisation Auriculaire", "Envoie du signale électrique du Noeud Auriculo-Ventriculaire vers le Faisceau de His", "Toutes les réponses", "Aucunes des réponses"], a:"Dépolarisation Auriculaire" },
+{ q:"À quoi correspond "T" dans l'onde PQRST de l'ECG?", o:["Diastole", "Repolarisation Ventriculaire", "Décontraction Générale", "Toutes les réponses", "Aucunes des réponses"], a:"Toutes les réponses" }
+];
+
+/* ===================== GENERATION DU QUIZ ===================== */
+const selectedQuestions = questionsPool.sort(()=>Math.random()-0.5).slice(0,20);
+const quizDiv = document.getElementById('quiz');
+selectedQuestions.forEach((q,i)=>{
+    const div = document.createElement('div');
+    div.className='question';
+    div.innerHTML=`<p>${i+1}. ${q.q}</p>`;
+    q.o.sort(()=>Math.random()-0.5).forEach(opt=>{
+        const label = document.createElement('label');
+        label.className='option';
+        label.innerHTML=`<input type="radio" name="q${i}" value="${opt}"> ${opt}`;
+        div.appendChild(label);
+    });
+    quizDiv.appendChild(div);
+});
+
+/* ===================== SUBMIT ===================== */
+document.getElementById('submit').onclick = async ()=>{
+    let score = 0;
+    selectedQuestions.forEach((q,i)=>{
+        const sel = document.querySelector(`input[name="q${i}"]:checked`);
+        if(sel && sel.value === q.a) score++;
+    });
+
+    const resultDiv = document.getElementById('result');
+
+    try{
+        const { data, error } = await supabaseClient
+            .from('users')
+            .select('essaib,evaluationb')
+            .eq('username', currentUser)
+            .single();
+        if(error){ console.error(error); resultDiv.innerHTML="Erreur lecture essais"; return; }
+
+        let essais = (data?.essaib || 0) + 1;
+
+        if(score>=12){
+            const { error:updateError } = await supabaseClient
+                .from('users')
+                .update({ evaluationb: score, essaib: essais })
+                .eq('username', currentUser);
+            if(updateError){ console.error(updateError); resultDiv.innerHTML="Erreur sauvegarde"; return; }
+
+            resultDiv.innerHTML=`✅ Réussi : ${score}/20<br>Retour au dashboard...`;
+            setTimeout(()=> location.href='dashboard.html',3000);
+        }else{
+            const { error:updateError } = await supabaseClient
+                .from('users')
+                .update({ essaib: essais })
+                .eq('username', currentUser);
+            if(updateError){ console.error(updateError); resultDiv.innerHTML="Erreur sauvegarde"; return; }
+
+            resultDiv.innerHTML=`❌ Échec : ${score}/20<br>Essais restants : ${3-essais}`;
+            if(essais>=3){
+                resultDiv.innerHTML+=`<br><strong style="color:#900">3 essais épuisés. Contactez l'administrateur.</strong>`;
                 document.getElementById('submit').disabled = true;
             }
-        })();
+        }
 
-        // Emplacement pour tes 35 questions différentes. Ajoute-les ici
-        const questionsPool = [
-            { q: "Exemple de question 1 ?", o: ["Opt1", "Opt2", "Opt3", "Toutes les réponses", "Aucune des réponses"], a: "Opt1" },
-            { q: "Exemple de question 2 ?", o: ["OptA", "OptB", "OptC", "Toutes les réponses", "Aucune des réponses"], a: "OptB" },
-            // Ajoute tes 33 autres questions ici au même format
-        ];
-
-        function shuffle(arr) { return arr.sort(() => Math.random() - 0.5); }
-        const questions = shuffle([...questionsPool]).slice(0, 20);
-
-        const quizDiv = document.getElementById('quiz');
-        questions.forEach((q, i) => {
-            const div = document.createElement('div');
-            div.className = 'question';
-            div.innerHTML = `<p>${i+1}. ${q.q}</p>`;
-            shuffle(q.o).forEach(opt => {
-                div.innerHTML += `<label class="option"><input type="radio" name="q${i}" value="${opt}"> ${opt}</label><br>`;
-            });
-            quizDiv.appendChild(div);
-        });
-
-        // Déconnexion si on quitte la page
-        window.onbeforeunload = () => {
-            localStorage.removeItem('currentUser');
-            return "Attention : quitter cette page vous déconnectera et vous devrez recommencer l'examen.";
-        };
-
-        document.getElementById('submit').onclick = async () => {
-            let score = 0;
-            questions.forEach((q, i) => {
-                const selected = document.querySelector(`input[name="q${i}"]:checked`);
-                if (selected && selected.value === q.a) score++;
-            });
-
-            const result = document.getElementById('result');
-            result.innerHTML = `Votre score : ${score} / 20<br>`;
-
-            const { data } = await supabase.from('users').select('essaiB').eq('user', user).single();
-            let essais = (data?.essaiB || 0) + 1;
-
-            if (score >= 12) {
-                result.innerHTML += "<span style='color:green'>Réussi ! Passage au QCM suivant dans 3 secondes...</span>";
-                await supabase.from('users').update({ evaluationB: score, essaiB: essais }).eq('user', user);
-                setTimeout(() => window.location.href = 'quizC.html', 3000);
-            } else {
-                result.innerHTML += "<span style='color:red'>Échec.</span><br>Essais restants : " + (3 - essais);
-                await supabase.from('users').update({ essaiB: essais }).eq('user', user);
-                if (essais >= 3) {
-                    result.innerHTML += "<br><strong style='color:#900'>3 essais épuisés. Contactez l'administrateur.</strong>";
-                    document.getElementById('submit').disabled = true;
-                }
-            }
-        };
-    </script>
+    }catch(err){
+        console.error(err);
+        resultDiv.innerHTML=`<strong style="color:#d00">Erreur : ${err.message}</strong>`;
+    }
+};
+</script>
 </body>
 </html>
