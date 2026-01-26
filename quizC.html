@@ -1,98 +1,128 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QCM C - UAE 3 : TCCC / TECC</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        body { font-family:Arial,sans-serif; background:#f8f9fa; color:#000; padding:20px; }
-        .container { max-width:900px; margin:auto; background:#fff; padding:30px; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.1); }
-        h1 { color:#C64E4F; text-align:center; margin-bottom:20px; }
-        .question { margin:30px 0; font-size:1.25rem; font-weight:bold; }
-        .option { margin:12px 0; padding:12px; border:1px solid #ddd; border-radius:8px; cursor:pointer; transition:0.2s; }
-        .option:hover { background:#f0f8ff; }
-        button { background:#C64E4F; color:white; padding:16px 40px; border:none; border-radius:8px; font-size:1.3rem; cursor:pointer; margin:30px auto; display:block; }
-        button:disabled { background:#aaa; cursor:not-allowed; }
-        #result { margin-top:40px; font-size:1.6rem; text-align:center; font-weight:bold; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QCM C - SIAMU Tactique / TCCC</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+body { font-family:'Arial',sans-serif; background:#f8f9fa; padding:20px; }
+.container { max-width:960px; margin:auto; background:#fff; padding:30px; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.08); }
+h1 { color:#C64E4F; text-align:center; margin-bottom:30px; }
+.question { margin:30px 0; font-weight:bold; }
+.option { display:block; margin:15px 0; padding:15px; border:1px solid #ccc; border-radius:8px; cursor:pointer; }
+button { background:#C64E4F; color:#fff; padding:15px 40px; border:none; border-radius:8px; font-size:1.2rem; cursor:pointer; margin:40px auto; display:block; }
+button:disabled { background:#aaa; cursor:not-allowed; }
+#result { margin-top:30px; font-size:1.4rem; text-align:center; font-weight:bold; }
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1>QCM C - UAE 3 : TCCC / TECC</h1>
-        <div id="quiz"></div>
-        <button id="submit">Valider mes réponses</button>
-        <div id="result"></div>
-    </div>
 
-    <script>
-        const supabase = Supabase.createClient('https://sevrfgivcpefyykuffti.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNldnJmZ2l2Y3BlZnl5a3VmZnRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5NDI1NTMsImV4cCI6MjA3ODUxODU1M30.YZnkSHsVWKQEhfU7xYfWyTFmtkM28Zuzdu7Y1sjBXQc');
+<div class="container">
+<h1>QCM C - SIAMU Tactique / TCCC</h1>
+<div id="quiz"></div>
+<button id="submit">Valider mes réponses</button>
+<div id="result"></div>
+</div>
 
-        const user = localStorage.getItem('currentUser');
-        if (!user) window.location.href = 'login.html';
+<script>
+/* ===================== SUPABASE ===================== */
+const supabaseUrl = 'https://sevrfgivcpefyykuffti.supabase.co';
+const supabaseKey = 'VOTRE_SUPABASE_KEY_ICI';
+const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-        // Vérifie si le QCM B est validé
-        (async () => {
-            const { data } = await supabase.from('users').select('evaluationB').eq('user', user).single();
-            if (data.evaluationB < 12) {
-                document.getElementById('result').innerHTML = 'Vous devez valider le QCM B avant de continuer.';
+/* ===================== AUTH ===================== */
+const currentUser = localStorage.getItem('currentUser');
+if(!currentUser) location.href='login.html';
+
+/* ===================== QUESTIONS ===================== */
+const questionsPool = [
+{ q:"Taux de mortalité des hémorragies en zones de jonction ?", o:["20%","30%","40%","50%"], a:"40%" },
+{ q:"Signe clé d’un pneumothorax sous tension ?", o:["Tachycardie","Déviation trachéale","Hypothermie","Bradycardie"], a:"Déviation trachéale" },
+{ q:"Valeur critique d’hypoxie (PO2) ?", o:["<80","<70","<60","<50"], a:"<60" },
+{ q:"Norme TCCC perfusion ?", o:["HR>100 & BP<100","HR>120 & BP<90","HR>110 & BP<80","HR>90 & BP<100"], a:"HR>120 & BP<90" },
+{ q:"Garrot MARCH : délai maximal ?", o:["<1min","<2min","<3min","<5min"], a:"<2min" },
+{ q:"Placement garrot ?", o:["1-2cm haut plaie","3-4cm haut plaie","5-7cm haut plaie","10cm haut plaie"], a:"5-7cm haut plaie" },
+{ q:"Airway MARCH : NPA si ?", o:["GCS<15","GCS<12","GCS<10","GCS<8"], a:"GCS<8" },
+{ q:"Needle decompression : localisation ?", o:["3e espace MCL","2e espace MID","5e espace axillaire","1er espace sternal"], a:"2e espace MID" },
+{ q:"TXA : délai maximal d’administration ?", o:["1h","2h","3h","4h"], a:"3h" },
+{ q:"Couverture hypothermie MARCH ?", o:["Couverture laine","Couverture mylar","Couverture coton","Aucune"], a:"Couverture mylar" },
+{ q:"RCP tactique zone chaude ?", o:["30:2","Ventilation only","Compressions only","Aucune RCP"], a:"Compressions only" },
+{ q:"Antiarythmique tactique FV réfractaire ?", o:["Lidocaïne","Amiodarone 150mg","Amiodarone 300mg","Atropine"], a:"Amiodarone 300mg" },
+{ q:"Kétamine dose IM ?", o:["10mg","20mg","50mg","100mg"], a:"50mg" },
+{ q:"Morphine contre-indication ?", o:["Douleur","Resp <12/min","Hypothermie","Tachycardie"], a:"Resp <12/min" },
+{ q:"Fentanyl lozenge dose ?", o:["200mcg","400mcg","600mcg","800mcg"], a:"800mcg" },
+{ q:"Celox est :", o:["Un antibiotique","Un hémostatique","Un analgésique","Un vasopresseur"], a:"Un hémostatique" },
+{ q:"SAM Splint : temps de moulage ?", o:["5s","10s","20s","30s"], a:"30s" },
+{ q:"Plaie pénétrante : geste prioritaire ?", o:["Suture","Packing + seal","Massage","Aspirer"], a:"Packing + seal" },
+{ q:"Brûlure tactique : refroidissement ?", o:["Eau abondante","Eau glacée","Sans eau","Gel"], a:"Sans eau" },
+{ q:"Phase Under Fire : priorité ?", o:["Airway","Circulation","Garrot","Hypothermie"], a:"Garrot" }
+];
+
+/* ===================== GENERATION DU QUIZ ===================== */
+const selectedQuestions = questionsPool.sort(()=>Math.random()-0.5).slice(0,20);
+const quizDiv = document.getElementById('quiz');
+selectedQuestions.forEach((q,i)=>{
+    const div = document.createElement('div');
+    div.className='question';
+    div.innerHTML=`<p>${i+1}. ${q.q}</p>`;
+    q.o.sort(()=>Math.random()-0.5).forEach(opt=>{
+        const label = document.createElement('label');
+        label.className='option';
+        label.innerHTML=`<input type="radio" name="q${i}" value="${opt}"> ${opt}`;
+        div.appendChild(label);
+    });
+    quizDiv.appendChild(div);
+});
+
+/* ===================== SUBMIT ===================== */
+document.getElementById('submit').onclick = async ()=>{
+    let score = 0;
+    selectedQuestions.forEach((q,i)=>{
+        const sel = document.querySelector(`input[name="q${i}"]:checked`);
+        if(sel && sel.value === q.a) score++;
+    });
+
+    const resultDiv = document.getElementById('result');
+
+    try{
+        const { data, error } = await supabaseClient
+            .from('users')
+            .select('essaic,evaluationc')
+            .eq('username', currentUser)
+            .single();
+        if(error){ console.error(error); resultDiv.innerHTML="Erreur lecture essais"; return; }
+
+        let essais = (data?.essaic || 0) + 1;
+
+        if(score>=12){
+            const { error:updateError } = await supabaseClient
+                .from('users')
+                .update({ evaluationc: score, essaic: essais })
+                .eq('username', currentUser);
+            if(updateError){ console.error(updateError); resultDiv.innerHTML="Erreur sauvegarde"; return; }
+
+            resultDiv.innerHTML=`✅ Réussi : ${score}/20<br>Retour au dashboard...`;
+            setTimeout(()=> location.href='dashboard.html',3000);
+        }else{
+            const { error:updateError } = await supabaseClient
+                .from('users')
+                .update({ essaic: essais })
+                .eq('username', currentUser);
+            if(updateError){ console.error(updateError); resultDiv.innerHTML="Erreur sauvegarde"; return; }
+
+            resultDiv.innerHTML=`❌ Échec : ${score}/20<br>Essais restants : ${3-essais}`;
+            if(essais>=3){
+                resultDiv.innerHTML+=`<br><strong style="color:#900">3 essais épuisés. Contactez l'administrateur.</strong>`;
                 document.getElementById('submit').disabled = true;
             }
-        })();
+        }
 
-        // Emplacement pour tes 35 questions différentes. Ajoute-les ici
-        const questionsPool = [
-            { q: "Exemple de question 1 ?", o: ["Opt1", "Opt2", "Opt3", "Toutes les réponses", "Aucune des réponses"], a: "Opt1" },
-            { q: "Exemple de question 2 ?", o: ["OptA", "OptB", "OptC", "Toutes les réponses", "Aucune des réponses"], a: "OptB" },
-            // Ajoute tes 33 autres questions ici au même format
-        ];
-
-        function shuffle(arr) { return arr.sort(() => Math.random() - 0.5); }
-        const questions = shuffle([...questionsPool]).slice(0, 20);
-
-        const quizDiv = document.getElementById('quiz');
-        questions.forEach((q, i) => {
-            const div = document.createElement('div');
-            div.className = 'question';
-            div.innerHTML = `<p>${i+1}. ${q.q}</p>`;
-            shuffle(q.o).forEach(opt => {
-                div.innerHTML += `<label class="option"><input type="radio" name="q${i}" value="${opt}"> ${opt}</label><br>`;
-            });
-            quizDiv.appendChild(div);
-        });
-
-        // Déconnexion si on quitte la page
-        window.onbeforeunload = () => {
-            localStorage.removeItem('currentUser');
-            return "Attention : quitter cette page vous déconnectera et vous devrez recommencer l'examen.";
-        };
-
-        document.getElementById('submit').onclick = async () => {
-            let score = 0;
-            questions.forEach((q, i) => {
-                const selected = document.querySelector(`input[name="q${i}"]:checked`);
-                if (selected && selected.value === q.a) score++;
-            });
-
-            const result = document.getElementById('result');
-            result.innerHTML = `Votre score : ${score} / 20<br>`;
-
-            const { data } = await supabase.from('users').select('essaiC').eq('user', user).single();
-            let essais = (data?.essaiC || 0) + 1;
-
-            if (score >= 12) {
-                result.innerHTML += "<span style='color:green'>Réussi ! Passage au QCM suivant dans 3 secondes...</span>";
-                await supabase.from('users').update({ evaluationC: score, essaiC: essais }).eq('user', user);
-                setTimeout(() => window.location.href = 'quizD.html', 3000);
-            } else {
-                result.innerHTML += "<span style='color:red'>Échec.</span><br>Essais restants : " + (3 - essais);
-                await supabase.from('users').update({ essaiC: essais }).eq('user', user);
-                if (essais >= 3) {
-                    result.innerHTML += "<br><strong style='color:#900'>3 essais épuisés. Contactez l'administrateur.</strong>";
-                    document.getElementById('submit').disabled = true;
-                }
-            }
-        };
-    </script>
+    }catch(err){
+        console.error(err);
+        resultDiv.innerHTML=`<strong style="color:#d00">Erreur : ${err.message}</strong>`;
+    }
+};
+</script>
 </body>
 </html>
