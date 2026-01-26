@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connexion - UE Infirmier Urgentiste Militaire</title>
     <link rel="icon" type="image/png" href="https://i.imgur.com/TpQXi2f.png">
-    <!-- Supabase UMD (chargement unique et sûr) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <style>
         body {
@@ -122,7 +121,7 @@
     </footer>
 
     <script>
-        // Supabase chargé via UMD → window.supabase est disponible
+        // Supabase via UMD (global)
         const supabaseUrl = 'https://sevrfgivcpefyykuffti.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNldnJmZ2l2Y3BlZnl5a3VmZnRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5NDI1NTMsImV4cCI6MjA3ODUxODU1M30.YZnkSHsVWKQEhfU7xYfWyTFmtkM28Zuzdu7Y1sjBXQc';
 
@@ -139,6 +138,8 @@
             message.textContent = 'Connexion en cours...';
 
             try {
+                console.log('Tentative de connexion pour user:', userInput);
+
                 const { data, error } = await supabaseClient
                     .from('users')
                     .select('user, password')
@@ -146,17 +147,20 @@
                     .single();
 
                 if (error) {
-                    console.error('Supabase error:', error);
+                    console.error('Erreur Supabase:', error);
                     message.style.color = '#d00';
-                    message.textContent = 'Erreur serveur : ' + error.message;
+                    message.textContent = 'Erreur serveur : ' + (error.message || 'Requête invalide');
                     return;
                 }
 
                 if (!data) {
                     message.style.color = '#d00';
                     message.textContent = 'Utilisateur introuvable.';
+                    console.log('Aucun utilisateur trouvé pour:', userInput);
                     return;
                 }
+
+                console.log('Utilisateur trouvé:', data.user);
 
                 if (data.password !== passwordInput) {
                     message.style.color = '#d00';
