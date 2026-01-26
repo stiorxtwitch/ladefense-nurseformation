@@ -6,16 +6,84 @@
     <title>QCM A - UAE 1 : Les Bases de l'Infirmier</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { font-family:Arial,sans-serif; background:#f8f9fa; color:#000; padding:20px; }
-        .container { max-width:900px; margin:auto; background:#fff; padding:30px; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.1); }
-        h1 { color:#C64E4F; text-align:center; margin-bottom:20px; }
-        .question { margin:30px 0; font-size:1.25rem; font-weight:bold; }
-        .option { margin:18px 0; padding:14px; border:1px solid #ddd; border-radius:8px; cursor:pointer; transition:0.2s; } /* Augmenté margin et padding pour éviter chevauchement */
-        .option:hover { background:#f0f8ff; }
-        button { background:#C64E4F; color:white; padding:16px 40px; border:none; border-radius:8px; font-size:1.3rem; cursor:pointer; margin:30px auto; display:block; }
-        button:disabled { background:#aaa; cursor:not-allowed; }
-        #result { margin-top:40px; font-size:1.6rem; text-align:center; font-weight:bold; }
-        #loading { text-align:center; font-size:1.2rem; color:#666; margin:20px 0; }
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f8f9fa;
+            color: #000;
+            padding: 20px 10px;
+            line-height: 1.5;
+        }
+        .container {
+            max-width: 960px;
+            margin: auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        h1 {
+            color: #C64E4F;
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 2.4rem;
+        }
+        .question {
+            margin: 40px 0;
+            font-size: 1.3rem;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+        .option-group {
+            margin-top: 15px;
+        }
+        .option {
+            display: block;
+            margin: 16px 0;           /* Espacement vertical augmenté */
+            padding: 16px 20px;       /* Plus de padding interne */
+            border: 1px solid #d0d0d0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: #fafafa;
+            min-height: 60px;         /* Hauteur minimale pour éviter chevauchement */
+            box-sizing: border-box;
+        }
+        .option:hover {
+            background: #f0f8ff;
+            border-color: #C64E4F;
+        }
+        .option input {
+            margin-right: 12px;
+            vertical-align: middle;
+        }
+        button {
+            background: #C64E4F;
+            color: white;
+            padding: 16px 40px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.3rem;
+            cursor: pointer;
+            margin: 40px auto;
+            display: block;
+            min-width: 220px;
+        }
+        button:disabled {
+            background: #aaa;
+            cursor: not-allowed;
+        }
+        #result {
+            margin-top: 40px;
+            font-size: 1.6rem;
+            text-align: center;
+            font-weight: bold;
+        }
+        #loading {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #666;
+            margin: 30px 0;
+        }
     </style>
 </head>
 <body>
@@ -28,27 +96,24 @@
     </div>
 
     <script>
-        // Supabase global via UMD (pas de re-déclaration)
+        // Supabase (chargement unique via UMD)
         const supabaseUrl = 'https://sevrfgivcpefyykuffti.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNldnJmZ2l2Y3BlZnl5a3VmZnRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5NDI1NTMsImV4cCI6MjA3ODUxODU1M30.YZnkSHsVWKQEhfU7xYfWyTFmtkM28Zuzdu7Y1sjBXQc';
-
         const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
         const currentUser = localStorage.getItem('currentUser');
-        if (!currentUser) {
-            window.location.href = 'login.html';
-        }
+        if (!currentUser) window.location.href = 'login.html';
 
-        // Pool de 35 questions uniques basées sur le PDF "Cours Infirmier Urgentiste Militaire 1.pdf" (difficiles, avec "Toutes" / "Aucune")
+        // 35 questions uniques, difficiles, tirées EXCLUSIVEMENT du PDF fourni
         const questionsPool = [
             { q: "Quelle est la débit cardiaque moyen chez l'adulte ?", o: ["3L/min", "4L/min", "5L/min", "6L/min", "Aucune des réponses"], a: "5L/min" },
-            { q: "Quelle perte sanguine provoque un choc (TA <90/60 mmHg) ?", o: ["5%", "10%", "15%", "20%", "Toutes les réponses"], a: "15%" },
+            { q: "À partir de quelle perte sanguine déclenche-t-on un choc (TA <90/60) ?", o: ["5%", "10%", "15%", "20%", "Toutes les réponses"], a: "15%" },
             { q: "Quelle est la fréquence respiratoire normale chez l'adulte ?", o: ["8-12/min", "12-20/min", "20-30/min", "30-40/min", "Aucune des réponses"], a: "12-20/min" },
-            { q: "Quelle est la valeur normale de SpO2 ?", o: [">90%", ">92%", ">95%", ">98%", "Toutes les réponses"], a: ">95%" },
-            { q: "Quelle est la plage normale de PO2 artériel ?", o: ["60-80 mmHg", "80-100 mmHg", "100-120 mmHg", "120-140 mmHg", "Aucune des réponses"], a: "80-100 mmHg" },
-            { q: "Quelle est la plage normale de PCO2 artériel ?", o: ["25-35 mmHg", "35-45 mmHg", "45-55 mmHg", "55-65 mmHg", "Toutes les réponses"], a: "35-45 mmHg" },
-            { q: "Quels sont les signes typiques d'une fracture ?", o: ["Gonflement seul", "Ecchymose seule", "Déformation seule", "Gonflement, ecchymose, déformation", "Aucune des réponses"], a: "Gonflement, ecchymose, déformation" },
-            { q: "Quelle est la fréquence cardiaque normale (FC) ?", o: ["40-80 bpm", "60-100 bpm", "80-120 bpm", "100-140 bpm", "Aucune des réponses"], a: "60-100 bpm" },
+            { q: "Quelle est la valeur normale de SpO2 ?", o: [">90%", ">92%", ">95%", ">98%", "Aucune des réponses"], a: ">95%" },
+            { q: "Quelle est la plage normale de PO2 artériel ?", o: ["60-80 mmHg", "80-100 mmHg", "100-120 mmHg", "120-140 mmHg", "Toutes les réponses"], a: "80-100 mmHg" },
+            { q: "Quelle est la plage normale de PCO2 artériel ?", o: ["25-35 mmHg", "35-45 mmHg", "45-55 mmHg", "55-65 mmHg", "Aucune des réponses"], a: "35-45 mmHg" },
+            { q: "Quels sont les trois signes typiques d'une fracture ?", o: ["Gonflement seul", "Ecchymose seule", "Déformation seule", "Gonflement, ecchymose, déformation", "Toutes les réponses"], a: "Gonflement, ecchymose, déformation" },
+            { q: "Quelle est la fréquence cardiaque normale (FC) ?", o: ["50-90 bpm", "60-100 bpm", "80-120 bpm", "100-140 bpm", "Aucune des réponses"], a: "60-100 bpm" },
             { q: "Quelle est la plage normale de tension artérielle (TA) ?", o: ["80-120/50-80 mmHg", "100-140/60-90 mmHg", "120-160/70-100 mmHg", "140-180/80-110 mmHg", "Toutes les réponses"], a: "100-140/60-90 mmHg" },
             { q: "Quelle est la température corporelle normale ?", o: ["35.5-36.5°C", "36.5-37.5°C", "37.5-38.5°C", "38.5-39.5°C", "Aucune des réponses"], a: "36.5-37.5°C" },
             { q: "Quel est le score GCS normal ?", o: ["10", "12", "15", "18", "Toutes les réponses"], a: "15" },
@@ -92,13 +157,19 @@
             const div = document.createElement('div');
             div.className = 'question';
             div.innerHTML = `<p>${i+1}. ${q.q}</p>`;
+            const optionGroup = document.createElement('div');
+            optionGroup.className = 'option-group';
             shuffle(q.o).forEach(opt => {
-                div.innerHTML += `<label class="option"><input type="radio" name="q${i}" value="${opt}"> ${opt}</label><br>`;
+                const label = document.createElement('label');
+                label.className = 'option';
+                label.innerHTML = `<input type="radio" name="q${i}" value="${opt}"> ${opt}`;
+                optionGroup.appendChild(label);
             });
+            div.appendChild(optionGroup);
             quizDiv.appendChild(div);
         });
 
-        // Déconnexion si on quitte la page
+        // Déconnexion forcée si on quitte la page
         window.onbeforeunload = () => {
             localStorage.removeItem('currentUser');
             return "Attention : quitter cette page vous déconnectera et vous devrez recommencer l'examen.";
@@ -114,20 +185,25 @@
             const resultDiv = document.getElementById('result');
             resultDiv.innerHTML = `Votre score : ${score} / 20<br>`;
 
-            const { data } = await supabaseClient.from('users').select('essaiA').eq('user', currentUser).single();
-            let essais = (data?.essaiA || 0) + 1;
+            try {
+                const { data } = await supabaseClient.from('users').select('essaiA').eq('user', currentUser).single();
+                let essais = (data?.essaiA || 0) + 1;
 
-            if (score >= 12) {
-                resultDiv.innerHTML += "<span style='color:green'>Réussi ! Passage au QCM suivant dans 3 secondes...</span>";
-                await supabaseClient.from('users').update({ evaluationA: score, essaiA: essais }).eq('user', currentUser);
-                setTimeout(() => window.location.href = 'quizB.html', 3000);
-            } else {
-                resultDiv.innerHTML += "<span style='color:red'>Échec.</span><br>Essais restants : " + (3 - essais);
-                await supabaseClient.from('users').update({ essaiA: essais }).eq('user', currentUser);
-                if (essais >= 3) {
-                    resultDiv.innerHTML += "<br><strong style='color:#900'>3 essais épuisés. Contactez l'administrateur.</strong>";
-                    document.getElementById('submit').disabled = true;
+                if (score >= 12) {
+                    resultDiv.innerHTML += "<span style='color:green'>Réussi ! Passage au QCM suivant dans 3 secondes...</span>";
+                    await supabaseClient.from('users').update({ evaluationA: score, essaiA: essais }).eq('user', currentUser);
+                    setTimeout(() => window.location.href = 'quizB.html', 3000);
+                } else {
+                    resultDiv.innerHTML += "<span style='color:red'>Échec.</span><br>Essais restants : " + (3 - essais);
+                    await supabaseClient.from('users').update({ essaiA: essais }).eq('user', currentUser);
+                    if (essais >= 3) {
+                        resultDiv.innerHTML += "<br><strong style='color:#900'>3 essais épuisés. Contactez l'administrateur.</strong>";
+                        document.getElementById('submit').disabled = true;
+                    }
                 }
+            } catch (err) {
+                resultDiv.innerHTML += "<br><strong style='color:#d00'>Erreur de sauvegarde : " + err.message + "</strong>";
+                console.error(err);
             }
         };
     </script>
