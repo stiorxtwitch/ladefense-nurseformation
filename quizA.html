@@ -41,13 +41,22 @@ const questionsPool = [
 { q:"À partir de quelle perte sanguine déclenche-t-on un choc (TA <90/60) ?", o:["5%","10%","15%","20%","Toutes les réponses"], a:"15%" },
 { q:"Quelle est la fréquence respiratoire normale chez l'adulte ?", o:["8-12/min","12-20/min","20-30/min","30-40/min","Aucune des réponses"], a:"12-20/min" },
 { q:"Quelle est la valeur normale de SpO2 ?", o:[">90%",">92%",">95%",">98%","Aucune des réponses"], a:">95%" },
-{ q:"Quelle est la plage normale de PO2 artériel ?", o:["60-80 mmHg","80-100 mmHg","100-120 mmHg","120-140 mmHg","Toutes les réponses"], a:"80-100 mmHg" },
-{ q:"Quelle est la plage normale de PCO2 artériel ?", o:["25-35 mmHg","35-45 mmHg","45-55 mmHg","55-65 mmHg","Aucune des réponses"], a:"35-45 mmHg" },
-{ q:"Quels sont les trois signes typiques d'une fracture ?", o:["Gonflement seul","Ecchymose seule","Déformation seule","Gonflement, ecchymose, déformation","Toutes les réponses"], a:"Gonflement, ecchymose, déformation" },
-{ q:"Quelle est la fréquence cardiaque normale (FC) ?", o:["50-90 bpm","60-100 bpm","80-120 bpm","100-140 bpm","Aucune des réponses"], a:"60-100 bpm" },
-{ q:"Quelle est la température corporelle normale ?", o:["35.5-36.5°C","36.5-37.5°C","37.5-38.5°C","38.5-39.5°C","Aucune des réponses"], a:"36.5-37.5°C" },
-{ q:"Quel est le score GCS normal ?", o:["10","12","15","18","Toutes les réponses"], a:"15" },
-// ... ajoute ici toutes les questions restantes comme dans ton précédent fichier
+{ q:"Quelle est la plage normale de PO2 artériel ?", o:["60-80","80-100","100-120","120-140","Toutes les réponses"], a:"80-100" },
+{ q:"Quelle est la plage normale de PCO2 artériel ?", o:["25-35","35-45","45-55","55-65","Aucune"], a:"35-45" },
+{ q:"Quels sont les trois signes typiques d'une fracture ?", o:["Gonflement","Ecchymose","Déformation","Les trois","Toutes"], a:"Les trois" },
+{ q:"Quelle est la FC normale ?", o:["50-90","60-100","80-120","100-140","Aucune"], a:"60-100" },
+{ q:"Quelle est la température normale ?", o:["35.5-36.5","36.5-37.5","37.5-38.5","38.5-39.5","Aucune"], a:"36.5-37.5" },
+{ q:"Quel est le score GCS normal ?", o:["10","12","15","18","Toutes"], a:"15" },
+{ q:"Dans l'ABC, que signifie A ?", o:["Airway","Breathing","Circulation","Défibrillation","Toutes"], a:"Airway" },
+{ q:"Ratio RCP adulte ?", o:["15:2","30:2","45:3","60:4","Aucune"], a:"30:2" },
+{ q:"Fréquence compressions RCP ?", o:["80-100","100-120","120-140","140-160","Toutes"], a:"100-120" },
+{ q:"Profondeur compressions ?", o:["3-4cm","4-5cm","5-6cm","6-7cm","Aucune"], a:"5-6cm" },
+{ q:"Durée d'un cycle RCP ?", o:["1min","2min","3min","4min","Toutes"], a:"2min" },
+{ q:"Quand utiliser un DAE ?", o:["FV/FA","Asystolie","Toujours","Jamais","Aucune"], a:"FV/FA" },
+{ q:"Antalgique de première intention ?", o:["Ibuprofène","Paracétamol","Aspirine","Morphine","Toutes"], a:"Paracétamol" },
+{ q:"Dose Paracétamol ?", o:["10mg/kg","15mg/kg","20mg/kg","25mg/kg","Aucune"], a:"15mg/kg" },
+{ q:"AINS ?", o:["Paracétamol","Ibuprofène","Aspirine","Morphine","Toutes"], a:"Ibuprofène" },
+{ q:"Anti-plaquettaire ?", o:["Paracétamol","Ibuprofène","Aspirine","Morphine","Toutes"], a:"Aspirine" }
 ];
 
 /* ===================== GENERATION QUIZ ===================== */
