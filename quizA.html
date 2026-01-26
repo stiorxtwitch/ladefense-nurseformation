@@ -4,14 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QCM A - UAE 1 : Les Bases de l'Infirmier</title>
-    <!-- Chargement unique de Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body { font-family:Arial,sans-serif; background:#f8f9fa; color:#000; padding:20px; }
         .container { max-width:900px; margin:auto; background:#fff; padding:30px; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.1); }
         h1 { color:#C64E4F; text-align:center; margin-bottom:20px; }
         .question { margin:30px 0; font-size:1.25rem; font-weight:bold; }
-        .option { margin:12px 0; padding:12px; border:1px solid #ddd; border-radius:8px; cursor:pointer; transition:0.2s; }
+        .option { margin:18px 0; padding:14px; border:1px solid #ddd; border-radius:8px; cursor:pointer; transition:0.2s; } /* Augmenté margin et padding pour éviter chevauchement */
         .option:hover { background:#f0f8ff; }
         button { background:#C64E4F; color:white; padding:16px 40px; border:none; border-radius:8px; font-size:1.3rem; cursor:pointer; margin:30px auto; display:block; }
         button:disabled { background:#aaa; cursor:not-allowed; }
@@ -40,22 +39,43 @@
             window.location.href = 'login.html';
         }
 
-        // === Emplacement pour tes 35 questions uniques ===
-        // Remplace ce tableau par tes vraies questions extraites du PDF
+        // Pool de 35 questions uniques basées sur le PDF "Cours Infirmier Urgentiste Militaire 1.pdf" (difficiles, avec "Toutes" / "Aucune")
         const questionsPool = [
-            { q: "Quelle perte de volume sanguin déclenche un choc hypovolémique ?", o: ["5-10%", "10-15%", "15%", "20-25%", "Aucune des réponses"], a: "15%" },
-            { q: "Quelle est la plage normale de la fréquence respiratoire chez l'adulte ?", o: ["8-12/min", "12-20/min", "20-30/min", "30-40/min", "Toutes les réponses sont fausses"], a: "12-20/min" },
-            { q: "Quelle est la valeur minimale normale de SpO2 ?", o: [">90%", ">92%", ">95%", ">98%", "Aucune des réponses"], a: ">95%" },
-            { q: "Quelle est la plage normale de PO2 artérielle ?", o: ["60-80 mmHg", "80-100 mmHg", "100-120 mmHg", "Toutes les réponses"], a: "80-100 mmHg" },
-            { q: "Quelle est la plage normale de PCO2 artérielle ?", o: ["25-35 mmHg", "35-45 mmHg", "45-55 mmHg", "Aucune des réponses"], a: "35-45 mmHg" },
-            { q: "Quels sont les trois signes classiques d'une fracture ?", o: ["Gonflement seul", "Gonflement + ecchymose + déformation", "Ecchymose seule", "Douleur seule", "Toutes les réponses"], a: "Gonflement + ecchymose + déformation" },
-            { q: "Quelle est la fréquence cardiaque normale chez l'adulte ?", o: ["50-90 bpm", "60-100 bpm", "70-110 bpm", "Aucune des réponses"], a: "60-100 bpm" },
-            { q: "Quelle est la tension artérielle normale ?", o: ["90-120/50-80 mmHg", "100-140/60-90 mmHg", "110-150/70-100 mmHg", "Toutes les réponses"], a: "100-140/60-90 mmHg" },
-            { q: "Quel est le score GCS normal ?", o: ["15", "13-14", "9-12", "<8", "Toutes les réponses"], a: "15" },
-            { q: "Quel médicament est contre-indiqué en cas d'ulcère gastrique ou d'insuffisance rénale ?", o: ["Paracétamol", "Ibuprofène", "Aspirine", "Morphine", "Toutes les réponses"], a: "Ibuprofène" },
-            // Ajoute ici tes 25 autres questions au format exact :
-            // { q: "Ta question ?", o: ["Opt1", "Opt2", "Opt3", "Toutes les réponses", "Aucune des réponses"], a: "Réponse correcte" },
-            // Tu peux en mettre jusqu'à 35 ou plus, le code en prend 20 aléatoires
+            { q: "Quelle est la débit cardiaque moyen chez l'adulte ?", o: ["3L/min", "4L/min", "5L/min", "6L/min", "Aucune des réponses"], a: "5L/min" },
+            { q: "Quelle perte sanguine provoque un choc (TA <90/60 mmHg) ?", o: ["5%", "10%", "15%", "20%", "Toutes les réponses"], a: "15%" },
+            { q: "Quelle est la fréquence respiratoire normale chez l'adulte ?", o: ["8-12/min", "12-20/min", "20-30/min", "30-40/min", "Aucune des réponses"], a: "12-20/min" },
+            { q: "Quelle est la valeur normale de SpO2 ?", o: [">90%", ">92%", ">95%", ">98%", "Toutes les réponses"], a: ">95%" },
+            { q: "Quelle est la plage normale de PO2 artériel ?", o: ["60-80 mmHg", "80-100 mmHg", "100-120 mmHg", "120-140 mmHg", "Aucune des réponses"], a: "80-100 mmHg" },
+            { q: "Quelle est la plage normale de PCO2 artériel ?", o: ["25-35 mmHg", "35-45 mmHg", "45-55 mmHg", "55-65 mmHg", "Toutes les réponses"], a: "35-45 mmHg" },
+            { q: "Quels sont les signes typiques d'une fracture ?", o: ["Gonflement seul", "Ecchymose seule", "Déformation seule", "Gonflement, ecchymose, déformation", "Aucune des réponses"], a: "Gonflement, ecchymose, déformation" },
+            { q: "Quelle est la fréquence cardiaque normale (FC) ?", o: ["40-80 bpm", "60-100 bpm", "80-120 bpm", "100-140 bpm", "Aucune des réponses"], a: "60-100 bpm" },
+            { q: "Quelle est la plage normale de tension artérielle (TA) ?", o: ["80-120/50-80 mmHg", "100-140/60-90 mmHg", "120-160/70-100 mmHg", "140-180/80-110 mmHg", "Toutes les réponses"], a: "100-140/60-90 mmHg" },
+            { q: "Quelle est la température corporelle normale ?", o: ["35.5-36.5°C", "36.5-37.5°C", "37.5-38.5°C", "38.5-39.5°C", "Aucune des réponses"], a: "36.5-37.5°C" },
+            { q: "Quel est le score GCS normal ?", o: ["10", "12", "15", "18", "Toutes les réponses"], a: "15" },
+            { q: "Quelle est la composante 'yeux' dans le GCS ?", o: ["3", "4", "5", "6", "Aucune des réponses"], a: "4" },
+            { q: "Quelle est la composante 'verbal' dans le GCS ?", o: ["3", "4", "5", "6", "Toutes les réponses"], a: "5" },
+            { q: "Quelle est la composante 'moteur' dans le GCS ?", o: ["4", "5", "6", "7", "Aucune des réponses"], a: "6" },
+            { q: "Dans l'ABC CRB, que signifie 'A' ?", o: ["Airway : tête-menton, check 10s respiration", "Breathing : écoute poitrine", "Circulation : pouls carotide", "Défibrillation", "Toutes les réponses"], a: "Airway : tête-menton, check 10s respiration" },
+            { q: "Dans l'ABC CRB, que signifie 'B' ?", o: ["Airway : tête-menton", "Breathing : écoute poitrine, 5-6 cycles secours", "Circulation : pouls carotide", "Défibrillation", "Aucune des réponses"], a: "Breathing : écoute poitrine, 5-6 cycles secours" },
+            { q: "Dans l'ABC CRB, que signifie 'C' ?", o: ["Airway : tête-menton", "Breathing : écoute poitrine", "Circulation : pouls carotide, stop saignement direct", "Défibrillation", "Toutes les réponses"], a: "Circulation : pouls carotide, stop saignement direct" },
+            { q: "Dans la RCP basique (ERC 2025), quel est le ratio compressions-ventilations ?", o: ["15:2", "30:2", "45:3", "60:4", "Aucune des réponses"], a: "30:2" },
+            { q: "Quelle est la fréquence des compressions en RCP ?", o: ["80-100/min", "100-120/min", "120-140/min", "140-160/min", "Toutes les réponses"], a: "100-120/min" },
+            { q: "Quelle est la profondeur des compressions en RCP ?", o: ["3-4cm", "4-5cm", "5-6cm", "6-7cm", "Aucune des réponses"], a: "5-6cm" },
+            { q: "Quelle est la durée d'un cycle en RCP ?", o: ["1min", "2min", "3min", "4min", "Toutes les réponses"], a: "2min" },
+            { q: "Quand utiliser un DAE en RCP ?", o: ["Si FV/FA/IM", "Si asystolie", "Toujours", "Jamais", "Aucune des réponses"], a: "Si FV/FA/IM" },
+            { q: "Quel est le médicament pour la douleur légère à modérée ?", o: ["Ibuprofène", "Paracétamol", "Aspirine", "Morphine", "Toutes les réponses"], a: "Paracétamol" },
+            { q: "Quelle est la dose de Paracétamol ?", o: ["10mg/kg PO/IV", "15mg/kg PO/IV", "20mg/kg PO/IV", "25mg/kg PO/IV", "Aucune des réponses"], a: "15mg/kg PO/IV" },
+            { q: "Quelle est la contre-indication du Paracétamol ?", o: ["Ulcère", "Hépatique", "Rénal", "Asthme", "Toutes les réponses"], a: "Hépatique" },
+            { q: "Quelle est l'utilisation du Paracétamol ?", o: ["Douleur inflammatoire", "Douleur légère à modérée, fièvre", "Suspi IM", "Douleur severe", "Aucune des réponses"], a: "Douleur légère à modérée, fièvre" },
+            { q: "Quel est le médicament AINS ?", o: ["Paracétamol", "Ibuprofène", "Aspirine", "Morphine", "Toutes les réponses"], a: "Ibuprofène" },
+            { q: "Quelle est la dose d'Ibuprofène ?", o: ["5mg/kg PO", "10mg/kg PO", "15mg/kg PO", "20mg/kg PO", "Aucune des réponses"], a: "10mg/kg PO" },
+            { q: "Quelle est la contre-indication de l'Ibuprofène ?", o: ["Hépatique", "Ulcère/Rénal", "Asthme", "Douleur inflammatoire", "Toutes les réponses"], a: "Ulcère/Rénal" },
+            { q: "Quand ne pas utiliser l'Ibuprofène ?", o: ["En cas de saignement ou polytrauma", "En cas de fièvre", "En cas de douleur légère", "Toujours", "Aucune des réponses"], a: "En cas de saignement ou polytrauma" },
+            { q: "Quel est le médicament anti-plaquettaire ?", o: ["Paracétamol", "Ibuprofène", "Aspirine", "Morphine", "Toutes les réponses"], a: "Aspirine" },
+            { q: "Quelle est la dose d'Aspirine ?", o: ["50-250mg PO", "75-325mg PO", "100-400mg PO", "125-350mg PO", "Aucune des réponses"], a: "75-325mg PO" },
+            { q: "Quelle est la contre-indication de l'Aspirine ?", o: ["Hépatique", "Ulcère", "Rénal", "Asthme/Allergie", "Toutes les réponses"], a: "Asthme/Allergie" },
+            { q: "Quelle est l'utilisation de l'Aspirine ?", o: ["Douleur inflammatoire", "Fièvre", "Suspi IM, AIT/AVC, 160-325mg en urgence", "Douleur légère", "Aucune des réponses"], a: "Suspi IM, AIT/AVC, 160-325mg en urgence" },
+            { q: "Quelle est la maîtrise obligatoire pour l'infirmier urgentiste ?", o: ["ABC seul", "Vital de base seul", "Hygiène mains seule", "Maîtrise ABC, vital de base, hygiène mains, communication avec le patient", "Toutes les réponses"], a: "Maîtrise ABC, vital de base, hygiène mains, communication avec le patient" }
         ];
 
         // Mélange et sélection de 20 questions
@@ -66,7 +86,7 @@
 
         const quizDiv = document.getElementById('quiz');
         const loadingDiv = document.getElementById('loading');
-        loadingDiv.textContent = '';
+        loadingDiv.style.display = 'none';
 
         selectedQuestions.forEach((q, i) => {
             const div = document.createElement('div');
@@ -78,13 +98,12 @@
             quizDiv.appendChild(div);
         });
 
-        // Déconnexion forcée si on quitte la page (recommencer l'examen)
+        // Déconnexion si on quitte la page
         window.onbeforeunload = () => {
             localStorage.removeItem('currentUser');
             return "Attention : quitter cette page vous déconnectera et vous devrez recommencer l'examen.";
         };
 
-        // Soumission des réponses
         document.getElementById('submit').onclick = async () => {
             let score = 0;
             selectedQuestions.forEach((q, i) => {
@@ -95,25 +114,20 @@
             const resultDiv = document.getElementById('result');
             resultDiv.innerHTML = `Votre score : ${score} / 20<br>`;
 
-            try {
-                const { data } = await supabaseClient.from('users').select('essaiA').eq('user', currentUser).single();
-                let essais = (data?.essaiA || 0) + 1;
+            const { data } = await supabaseClient.from('users').select('essaiA').eq('user', currentUser).single();
+            let essais = (data?.essaiA || 0) + 1;
 
-                if (score >= 12) {
-                    resultDiv.innerHTML += "<span style='color:green'>Réussi ! Passage au QCM suivant dans 3 secondes...</span>";
-                    await supabaseClient.from('users').update({ evaluationA: score, essaiA: essais }).eq('user', currentUser);
-                    setTimeout(() => window.location.href = 'dashboard.html', 3000); // Retour au dashboard
-                } else {
-                    resultDiv.innerHTML += "<span style='color:red'>Échec.</span><br>Essais restants : " + (3 - essais);
-                    await supabaseClient.from('users').update({ essaiA: essais }).eq('user', currentUser);
-                    if (essais >= 3) {
-                        resultDiv.innerHTML += "<br><strong style='color:#900'>3 essais épuisés. Contactez l'administrateur.</strong>";
-                        document.getElementById('submit').disabled = true;
-                    }
+            if (score >= 12) {
+                resultDiv.innerHTML += "<span style='color:green'>Réussi ! Passage au QCM suivant dans 3 secondes...</span>";
+                await supabaseClient.from('users').update({ evaluationA: score, essaiA: essais }).eq('user', currentUser);
+                setTimeout(() => window.location.href = 'quizB.html', 3000);
+            } else {
+                resultDiv.innerHTML += "<span style='color:red'>Échec.</span><br>Essais restants : " + (3 - essais);
+                await supabaseClient.from('users').update({ essaiA: essais }).eq('user', currentUser);
+                if (essais >= 3) {
+                    resultDiv.innerHTML += "<br><strong style='color:#900'>3 essais épuisés. Contactez l'administrateur.</strong>";
+                    document.getElementById('submit').disabled = true;
                 }
-            } catch (err) {
-                resultDiv.innerHTML += "<br><strong style='color:#d00'>Erreur de sauvegarde : " + err.message + "</strong>";
-                console.error(err);
             }
         };
     </script>
