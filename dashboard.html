@@ -2,123 +2,65 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard UE - Infirmier Urgentiste Militaire</title>
-    <link rel="icon" type="image/png" href="https://i.imgur.com/TpQXi2f.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <style>
         * { margin:0; padding:0; box-sizing:border-box; }
-        body {
-            font-family: 'Arial', sans-serif;
-            background: #f8f9fa;
-            color: #000;
-            line-height: 1.6;
-            min-height: 100vh;
-        }
+        body { font-family: Arial, sans-serif; background:#f8f9fa; }
         header {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            background: rgba(255,255,255,0.97);
-            backdrop-filter: blur(10px);
-            z-index: 1000;
-            padding: 1rem 5%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: fixed; top:0; width:100%;
+            background:#fff; padding:1rem 5%;
+            display:flex; justify-content:space-between;
+            box-shadow:0 2px 10px rgba(0,0,0,.1);
+            z-index:1000;
         }
-        .logo {
-            display: flex;
-            align-items: center;
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #C64E4F;
-        }
-        .logo img { height: 55px; margin-right: 12px; }
-        nav ul { display: flex; list-style: none; }
-        nav ul li { margin-left: 2.5rem; }
-        nav ul li a { color: #333; text-decoration: none; font-weight: 500; transition: color 0.3s; cursor: pointer; }
-        nav ul li a:hover { color: #C64E4F; }
-        .dashboard {
-            padding: 8rem 5% 6rem;
-            max-width: 1200px;
-            margin: auto;
-            text-align: center;
-        }
-        .dashboard h1 {
-            font-size: 3rem;
-            color: #C64E4F;
-            margin-bottom: 3rem;
-        }
+        .logo { display:flex; align-items:center; font-size:1.8rem; font-weight:bold; color:#C64E4F; }
+        .logo img { height:50px; margin-right:10px; }
+        nav ul { display:flex; list-style:none; }
+        nav li { margin-left:2rem; }
+        nav a { text-decoration:none; color:#333; font-weight:500; cursor:pointer; }
+
+        .dashboard { padding:8rem 5% 5rem; max-width:1200px; margin:auto; text-align:center; }
+        .dashboard h1 { color:#C64E4F; font-size:3rem; margin-bottom:3rem; }
+
         .uae-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 2rem;
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+            gap:2rem;
         }
+
         .uae-card {
-            background: #fff;
-            padding: 2rem;
-            border-radius: 16px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-            transition: all 0.3s ease;
-            text-align: left;
-            cursor: pointer;
+            background:#fff; padding:2rem;
+            border-radius:16px;
+            box-shadow:0 8px 20px rgba(0,0,0,.08);
+            cursor:pointer;
+            transition:.3s;
+            text-align:left;
         }
-        .uae-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
-        }
-        .uae-card.locked {
-            background: #f5f5f5;
-            cursor: not-allowed;
-            opacity: 0.65;
-        }
-        .uae-card.locked:hover {
-            transform: none;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-        }
-        .uae-card.validated {
-            background: #e8f5e9;
-            cursor: default;
-            opacity: 0.9;
-        }
-        .uae-card.validated:hover {
-            transform: none;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-        }
-        .uae-card h3 {
-            font-size: 1.6rem;
-            color: #C64E4F;
-            margin-bottom: 0.8rem;
-        }
-        .uae-card p {
-            font-size: 1.1rem;
-            color: #555;
-        }
-        .status {
-            margin-top: 1rem;
-            font-weight: bold;
-            font-size: 1rem;
-        }
-        .status.valid { color: #4CAF50; }
-        .status.locked { color: #d32f2f; }
-        .status.available { color: #1976D2; }
-        #message { margin-top: 2rem; color: #d00; font-weight: bold; }
-        footer {
-            text-align: center;
-            padding: 3rem 5%;
-            background: #f0f0f0;
-            color: #666;
-            font-size: 1rem;
-        }
+
+        .uae-card:hover { transform:translateY(-5px); }
+        .uae-card.locked { background:#f5f5f5; cursor:not-allowed; opacity:.6; }
+        .uae-card.validated { background:#e8f5e9; cursor:default; }
+
+        .uae-card h3 { color:#C64E4F; margin-bottom:.5rem; }
+        .uae-card p { color:#555; }
+
+        .status { margin-top:1rem; font-weight:bold; }
+        .status.valid { color:#4CAF50; }
+        .status.locked { color:#d32f2f; }
+        .status.available { color:#1976D2; }
+
+        footer { text-align:center; padding:2rem; background:#eee; margin-top:4rem; }
     </style>
 </head>
+
 <body>
 
 <header>
     <div class="logo">
-        <img src="https://i.imgur.com/TpQXi2f.png" alt="Logo La Défense">
+        <img src="https://i.imgur.com/TpQXi2f.png">
         LA DÉFENSE
     </div>
     <nav>
@@ -132,95 +74,87 @@
 <section class="dashboard">
     <h1>Vos Unités d'Enseignement</h1>
     <div class="uae-grid" id="uaeGrid"></div>
-    <div id="message"></div>
 </section>
 
 <footer>
-    © La Défense Belge - Composante Médicale - Tous droits réservés
+    © La Défense Belge - Composante Médicale
 </footer>
 
 <script>
-    const supabaseUrl = 'https://sevrfgivcpefyykuffti.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNldnJmZ2l2Y3BlZnl5a3VmZnRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5NDI1NTMsImV4cCI6MjA3ODUxODU1M30.YZnkSHsVWKQEhfU7xYfWyTFmtkM28Zuzdu7Y1sjBXQc';
+const supabase = window.supabase.createClient(
+    'https://sevrfgivcpefyykuffti.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNldnJmZ2l2Y3BlZnl5a3VmZnRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5NDI1NTMsImV4cCI6MjA3ODUxODU1M30.YZnkSHsVWKQEhfU7xYfWyTFmtkM28Zuzdu7Y1sjBXQc'
+);
 
-    const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+const currentUser = localStorage.getItem('currentUser');
+if (!currentUser) location.href = 'login.html';
 
-    const currentUser = localStorage.getItem('currentUser');
-    if (!currentUser) {
-        window.location.href = 'login.html';
-    }
+const modules = [
+    { id:'A', title:'UAE 1 : Bases Infirmier', desc:'Anatomie, protocoles.', file:'quizA.html', eval:'evaluationA' },
+    { id:'B', title:'UAE 2 : SIAMU', desc:'Urgences avancées.', file:'quizB.html', eval:'evaluationB' },
+    { id:'C', title:'UAE 3 : TCCC / TECC', desc:'Combat Casualty Care.', file:'quizC.html', eval:'evaluationC' },
+    { id:'D', title:'UAE 4 : OPEX', desc:'Déploiement extérieur.', file:'quizD.html', eval:'evaluationD' },
+    { id:'E', title:'UAE 5 : Injections', desc:'IV, IM, SC, ID.', file:'quizE.html', eval:'evaluationE' }
+];
 
-    const modules = [
-        { id: 'A', title: 'UAE 1 : Les Bases de l\'Infirmier', desc: 'Anatomie, physiologie, protocoles de base, premiers secours.', file: 'quizA.html', eval: 'evaluationA' },
-        { id: 'B', title: 'UAE 2 : SIAMU', desc: 'Soins avancés, ACLS, ABCDE.', file: 'quizB.html', eval: 'evaluationB' },
-        { id: 'C', title: 'UAE 3 : TCCC / TECC', desc: 'Tactical Combat Casualty Care.', file: 'quizC.html', eval: 'evaluationC' },
-        { id: 'D', title: 'UAE 4 : OPEX', desc: 'Déploiement extérieur.', file: 'quizD.html', eval: 'evaluationD' },
-        { id: 'E', title: 'UAE 5 : Injections', desc: 'IV, IM, SC, ID.', file: 'quizE.html', eval: 'evaluationE' }
-    ];
+async function loadDashboard() {
+    const { data } = await supabase
+        .from('users')
+        .select('*')
+        .eq('username', currentUser)
+        .single();
 
-    async function loadDashboard() {
-        const messageDiv = document.getElementById('message');
-        messageDiv.textContent = 'Loading progress...';
+    const grid = document.getElementById('uaeGrid');
+    grid.innerHTML = '';
 
-        try {
-            const { data, error } = await supabaseClient
-                .from('users')
-                .select('*')
-                .eq('username', currentUser)
-                .single();
+    let previousPassed = true;
 
-            if (error) throw error;
+    modules.forEach(mod => {
+        const card = document.createElement('div');
+        card.className = 'uae-card';
 
-            const grid = document.getElementById('uaeGrid');
-            grid.innerHTML = '';
+        const score = data[mod.eval] || 0;
+        const essais = data['essai' + mod.id] || 0;
 
-            let previousPassed = true;
+        let statusText, statusClass;
 
-            modules.forEach(mod => {
-                const card = document.createElement('div');
-                card.className = 'uae-card';
-
-                const score = data[mod.eval] || 0;
-                let statusText = 'Not started';
-                let statusClass = 'available';
-
-                if (score >= 12) {
-                    statusText = `Validated (${score}/20)`;
-                    statusClass = 'valid';
-                    card.classList.add('validated');
-                } else if (!previousPassed) {
-                    statusText = 'Locked';
-                    statusClass = 'locked';
-                    card.classList.add('locked');
-                }
-
-                card.innerHTML = `
-                    <h3>${mod.title}</h3>
-                    <p>${mod.desc}</p>
-                    <div class="status ${statusClass}">${statusText}</div>
-                `;
-
-                if (previousPassed && score < 12) {
-                    card.onclick = () => window.location.href = mod.file;
-                }
-
-                grid.appendChild(card);
-                previousPassed = score >= 12;
-            });
-
-            messageDiv.textContent = '';
-        } catch (err) {
-            messageDiv.textContent = 'Loading error: ' + err.message;
-            console.error(err);
+        if (score >= 12) {
+            statusText = `Validé (${score}/20)`;
+            statusClass = 'valid';
+            card.classList.add('validated');
+        } else if (essais >= 3) {
+            statusText = 'Bloqué (3 essais échoués)';
+            statusClass = 'locked';
+            card.classList.add('locked');
+            previousPassed = false;
+        } else if (!previousPassed) {
+            statusText = 'Verrouillé (UAE précédente non validée)';
+            statusClass = 'locked';
+            card.classList.add('locked');
+            previousPassed = false;
+        } else {
+            statusText = `Disponible (Essais restants : ${3 - essais})`;
+            statusClass = 'available';
+            card.onclick = () => location.href = mod.file;
         }
-    }
 
-    function logout() {
-        localStorage.removeItem('currentUser');
-        window.location.href = 'login.html';
-    }
+        card.innerHTML = `
+            <h3>${mod.title}</h3>
+            <p>${mod.desc}</p>
+            <div class="status ${statusClass}">${statusText}</div>
+        `;
 
-    loadDashboard();
+        grid.appendChild(card);
+        previousPassed = score >= 12;
+    });
+}
+
+function logout() {
+    localStorage.removeItem('currentUser');
+    location.href = 'login.html';
+}
+
+loadDashboard();
 </script>
 
 </body>
