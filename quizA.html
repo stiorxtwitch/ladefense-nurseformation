@@ -192,7 +192,7 @@
                 if (score >= 12) {
                     resultDiv.innerHTML += "<span style='color:green'>Réussi ! Passage au QCM suivant dans 3 secondes...</span>";
                     await supabaseClient.from('users').update({ evaluationA: score, essaiA: essais }).eq('user', currentUser);
-                    setTimeout(() => window.location.href = 'quizB.html', 3000);
+                    setTimeout(() => window.location.href = 'dashboard.html', 3000);
                 } else {
                     resultDiv.innerHTML += "<span style='color:red'>Échec.</span><br>Essais restants : " + (3 - essais);
                     await supabaseClient.from('users').update({ essaiA: essais }).eq('user', currentUser);
