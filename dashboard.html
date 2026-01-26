@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard UE - Infirmier Urgentiste Militaire</title>
     <link rel="icon" type="image/png" href="https://i.imgur.com/TpQXi2f.png">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * { margin:0; padding:0; box-sizing:border-box; }
         body {
@@ -75,6 +75,15 @@
             opacity: 0.65;
         }
         .uae-card.locked:hover {
+            transform: none;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        }
+        .uae-card.validated {
+            background: #e8f5e9;
+            cursor: default;
+            opacity: 0.9;
+        }
+        .uae-card.validated:hover {
             transform: none;
             box-shadow: 0 8px 20px rgba(0,0,0,0.08);
         }
@@ -179,6 +188,7 @@
                     if (score >= 12) {
                         statusText = `Validé (Score: ${score}/20)`;
                         statusClass = 'valid';
+                        card.classList.add('validated');
                     } else if (!previousPassed) {
                         statusText = 'Verrouillé (précédent non validé)';
                         statusClass = 'locked';
@@ -193,6 +203,7 @@
                         <div class="status ${statusClass}">${statusText}</div>
                     `;
 
+                    // Clique seulement si disponible et non validé
                     if (previousPassed && score < 12) {
                         card.addEventListener('click', () => {
                             window.location.href = mod.file;
@@ -201,6 +212,7 @@
 
                     grid.appendChild(card);
 
+                    // Mise à jour pour le prochain module
                     previousPassed = score >= 12;
                 });
 
