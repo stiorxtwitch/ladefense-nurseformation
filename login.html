@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connexion - UE Infirmier Urgentiste Militaire</title>
     <link rel="icon" type="image/png" href="https://i.imgur.com/TpQXi2f.png">
-    <!-- Chargement unique de Supabase -->
+    <!-- Chargement unique et propre de Supabase (UMD version) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <style>
         body {
@@ -122,14 +122,12 @@
     </footer>
 
     <script>
-        // Supabase chargé une seule fois via UMD
+        // Supabase est chargé via UMD → supabase est global
         const supabaseUrl = 'https://sevrfgivcpefyykuffti.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNldnJmZ2l2Y3BlZnl5a3VmZnRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5NDI1NTMsImV4cCI6MjA3ODUxODU1M30.YZnkSHsVWKQEhfU7xYfWyTFmtkM28Zuzdu7Y1sjBXQc';
 
-        // Vérifie que supabase n'est pas déjà déclaré
-        if (typeof supabase === 'undefined') {
-            var supabase = supabase.createClient(supabaseUrl, supabaseKey);
-        }
+        // Utilise directement window.supabase (pas besoin de recréer)
+        const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -142,7 +140,7 @@
             message.textContent = 'Connexion en cours...';
 
             try {
-                const { data, error } = await supabase
+                const { data, error } = await supabaseClient
                     .from('users')
                     .select('user, password')
                     .eq('user', userInput)
@@ -151,6 +149,7 @@
                 if (error || !data) {
                     message.style.color = '#d00';
                     message.textContent = 'Utilisateur introuvable.';
+                    console.error('Supabase error:', error);
                     return;
                 }
 
@@ -163,15 +162,15 @@
                 // Connexion réussie
                 localStorage.setItem('currentUser', userInput);
                 message.style.color = '#4CAF50';
-                message.textContent = 'Connexion réussie ! Redirection...';
+                message.textContent = 'Connexion réussie ! Redirection dans 2 secondes...';
                 setTimeout(() => {
-                    window.location.href = 'dashboard.html'; // ou quizA.html si tu préfères
-                }, 1500);
+                    window.location.href = 'dashboard.html'; // ou quizA.html si tu préfères commencer directement
+                }, 2000);
 
             } catch (err) {
                 message.style.color = '#d00';
-                message.textContent = 'Erreur : ' + err.message;
-                console.error('Erreur Supabase :', err);
+                message.textContent = 'Erreur de connexion : ' + err.message;
+                console.error('Erreur complète :', err);
             }
         });
     </script>
