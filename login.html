@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connexion - UE Infirmier Urgentiste Militaire</title>
     <link rel="icon" type="image/png" href="https://i.imgur.com/TpQXi2f.png">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Chargement unique de Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <style>
         body {
             margin: 0;
@@ -80,7 +81,7 @@
             transition: background 0.3s;
         }
         button:hover { background: #a53d3e; }
-        #message { margin-top: 25px; color: #d00; font-weight: bold; font-size: 1.1rem; }
+        #message { margin-top: 25px; font-weight: bold; font-size: 1.1rem; }
         footer {
             text-align: center;
             padding: 2rem;
@@ -121,42 +122,57 @@
     </footer>
 
     <script>
-        const supabase = Supabase.createClient(
-            'https://sevrfgivcpefyykuffti.supabase.co',
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNldnJmZ2l2Y3BlZnl5a3VmZnRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5NDI1NTMsImV4cCI6MjA3ODUxODU1M30.YZnkSHsVWKQEhfU7xYfWyTFmtkM28Zuzdu7Y1sjBXQc'
-        );
+        // Supabase chargé une seule fois via UMD
+        const supabaseUrl = 'https://sevrfgivcpefyykuffti.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNldnJmZ2l2Y3BlZnl5a3VmZnRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5NDI1NTMsImV4cCI6MjA3ODUxODU1M30.YZnkSHsVWKQEhfU7xYfWyTFmtkM28Zuzdu7Y1sjBXQc';
 
-        document.getElementById('loginForm').addEventListener('submit', async e => {
+        // Vérifie que supabase n'est pas déjà déclaré
+        if (typeof supabase === 'undefined') {
+            var supabase = supabase.createClient(supabaseUrl, supabaseKey);
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const user = document.getElementById('user').value.trim();
-            const password = document.getElementById('password').value;
 
+            const userInput = document.getElementById('user').value.trim();
+            const passwordInput = document.getElementById('password').value;
             const message = document.getElementById('message');
+
+            message.style.color = '#000';
             message.textContent = 'Connexion en cours...';
 
-            const { data, error } = await supabase
-                .from('users')
-                .select('*')
-                .eq('user', user)
-                .single();
+            try {
+                const { data, error } = await supabase
+                    .from('users')
+                    .select('user, password')
+                    .eq('user', userInput)
+                    .single();
 
-            if (error || !data) {
-                message.textContent = 'Utilisateur introuvable.';
-                return;
+                if (error || !data) {
+                    message.style.color = '#d00';
+                    message.textContent = 'Utilisateur introuvable.';
+                    return;
+                }
+
+                if (data.password !== passwordInput) {
+                    message.style.color = '#d00';
+                    message.textContent = 'Mot de passe incorrect.';
+                    return;
+                }
+
+                // Connexion réussie
+                localStorage.setItem('currentUser', userInput);
+                message.style.color = '#4CAF50';
+                message.textContent = 'Connexion réussie ! Redirection...';
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html'; // ou quizA.html si tu préfères
+                }, 1500);
+
+            } catch (err) {
+                message.style.color = '#d00';
+                message.textContent = 'Erreur : ' + err.message;
+                console.error('Erreur Supabase :', err);
             }
-
-            if (data.password !== password) {
-                message.textContent = 'Mot de passe incorrect.';
-                return;
-            }
-
-            // Connexion réussie
-            localStorage.setItem('currentUser', user);
-            message.style.color = '#4CAF50';
-            message.textContent = 'Connexion réussie ! Redirection...';
-            setTimeout(() => {
-                window.location.href = 'dashboard.html';
-            }, 1500);
         });
     </script>
 </body>
