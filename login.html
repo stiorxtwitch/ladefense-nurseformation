@@ -13,8 +13,7 @@
             font-family: 'Arial', sans-serif;
             background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
             display: flex;
-            justify-content: center;
-            align-items: center;
+            flex-direction: column;
             min-height: 100vh;
             color: #000;
         }
@@ -41,17 +40,23 @@
         .logo img { height: 55px; margin-right: 12px; }
         nav ul { display: flex; list-style: none; }
         nav ul li { margin-left: 2.5rem; }
-        nav ul li a { color: #333; text-decoration: none; font-weight: 500; }
+        nav ul li a { color: #333; text-decoration: none; font-weight: 500; transition: color 0.3s; }
         nav ul li a:hover { color: #C64E4F; }
-        .container {
+        .login-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 80px 20px 40px;
+        }
+        .form-box {
             background: #fff;
             padding: 50px;
             border-radius: 16px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.15);
             max-width: 450px;
-            width: 90%;
+            width: 100%;
             text-align: center;
-            margin-top: 80px;
         }
         h1 { color: #C64E4F; margin-bottom: 30px; font-size: 2.5rem; }
         input {
@@ -77,10 +82,9 @@
         button:hover { background: #a53d3e; }
         #message { margin-top: 25px; color: #d00; font-weight: bold; font-size: 1.1rem; }
         footer {
-            position: fixed;
-            bottom: 20px;
-            width: 100%;
             text-align: center;
+            padding: 2rem;
+            background: #f0f0f0;
             color: #666;
             font-size: 0.9rem;
         }
@@ -100,14 +104,16 @@
         </nav>
     </header>
 
-    <div class="container">
-        <h1>Connexion au système UE</h1>
-        <form id="loginForm">
-            <input type="text" id="user" placeholder="Nom d'utilisateur" required autocomplete="off">
-            <input type="password" id="password" placeholder="Mot de passe" required autocomplete="off">
-            <button type="submit">Se connecter</button>
-        </form>
-        <div id="message"></div>
+    <div class="login-container">
+        <div class="form-box">
+            <h1>Connexion au système UE</h1>
+            <form id="loginForm">
+                <input type="text" id="user" placeholder="Nom d'utilisateur" required autocomplete="off">
+                <input type="password" id="password" placeholder="Mot de passe" required autocomplete="off">
+                <button type="submit">Se connecter</button>
+            </form>
+            <div id="message"></div>
+        </div>
     </div>
 
     <footer>
@@ -125,24 +131,32 @@
             const user = document.getElementById('user').value.trim();
             const password = document.getElementById('password').value;
 
+            const message = document.getElementById('message');
+            message.textContent = 'Connexion en cours...';
+
             const { data, error } = await supabase
                 .from('users')
                 .select('*')
                 .eq('user', user)
                 .single();
 
-            const msg = document.getElementById('message');
             if (error || !data) {
-                msg.textContent = 'Utilisateur introuvable.';
-                return;
-            }
-            if (data.password !== password) {
-                msg.textContent = 'Mot de passe incorrect.';
+                message.textContent = 'Utilisateur introuvable.';
                 return;
             }
 
+            if (data.password !== password) {
+                message.textContent = 'Mot de passe incorrect.';
+                return;
+            }
+
+            // Connexion réussie
             localStorage.setItem('currentUser', user);
-            window.location.href = 'dashboard.html';  // Redirection vers le premier QCM
+            message.style.color = '#4CAF50';
+            message.textContent = 'Connexion réussie ! Redirection...';
+            setTimeout(() => {
+                window.location.href = 'dashboard.html';
+            }, 1500);
         });
     </script>
 </body>
