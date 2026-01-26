@@ -148,6 +148,7 @@
         const currentUser = localStorage.getItem('currentUser');
         if (!currentUser) {
             window.location.href = 'login.html';
+            return; // Correction du 'illegal return' – maintenant dans le scope principal
         }
 
         const modules = [
@@ -212,7 +213,6 @@
 
                     grid.appendChild(card);
 
-                    // Mise à jour pour le prochain module
                     previousPassed = score >= 12;
                 });
 
