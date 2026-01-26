@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - UE Infirmier Urgentiste Militaire</title>
+    <link rel="icon" type="image/png" href="https://i.imgur.com/TpQXi2f.png">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #000;
+        }
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255,255,255,0.97);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #C64E4F;
+        }
+        .logo img { height: 55px; margin-right: 12px; }
+        nav ul { display: flex; list-style: none; }
+        nav ul li { margin-left: 2.5rem; }
+        nav ul li a { color: #333; text-decoration: none; font-weight: 500; }
+        nav ul li a:hover { color: #C64E4F; }
+        .container {
+            background: #fff;
+            padding: 50px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            max-width: 450px;
+            width: 90%;
+            text-align: center;
+            margin-top: 80px;
+        }
+        h1 { color: #C64E4F; margin-bottom: 30px; font-size: 2.5rem; }
+        input {
+            width: 100%;
+            padding: 14px;
+            margin: 15px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1.1rem;
+        }
+        button {
+            background: #C64E4F;
+            color: white;
+            padding: 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.3rem;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            transition: background 0.3s;
+        }
+        button:hover { background: #a53d3e; }
+        #message { margin-top: 25px; color: #d00; font-weight: bold; font-size: 1.1rem; }
+        footer {
+            position: fixed;
+            bottom: 20px;
+            width: 100%;
+            text-align: center;
+            color: #666;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <img src="https://i.imgur.com/TpQXi2f.png" alt="Logo La Défense">
+            LA DÉFENSE
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Accueil</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h1>Connexion au système UE</h1>
+        <form id="loginForm">
+            <input type="text" id="user" placeholder="Nom d'utilisateur" required autocomplete="off">
+            <input type="password" id="password" placeholder="Mot de passe" required autocomplete="off">
+            <button type="submit">Se connecter</button>
+        </form>
+        <div id="message"></div>
+    </div>
+
+    <footer>
+        © La Défense Belge - Composante Médicale - Tous droits réservés
+    </footer>
+
+    <script>
+        const supabase = Supabase.createClient(
+            'https://sevrfgivcpefyykuffti.supabase.co',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNldnJmZ2l2Y3BlZnl5a3VmZnRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5NDI1NTMsImV4cCI6MjA3ODUxODU1M30.YZnkSHsVWKQEhfU7xYfWyTFmtkM28Zuzdu7Y1sjBXQc'
+        );
+
+        document.getElementById('loginForm').addEventListener('submit', async e => {
+            e.preventDefault();
+            const user = document.getElementById('user').value.trim();
+            const password = document.getElementById('password').value;
+
+            const { data, error } = await supabase
+                .from('users')
+                .select('*')
+                .eq('user', user)
+                .single();
+
+            const msg = document.getElementById('message');
+            if (error || !data) {
+                msg.textContent = 'Utilisateur introuvable.';
+                return;
+            }
+            if (data.password !== password) {
+                msg.textContent = 'Mot de passe incorrect.';
+                return;
+            }
+
+            localStorage.setItem('currentUser', user);
+            window.location.href = 'quizA.html';  // Redirection vers le premier QCM
+        });
+    </script>
+</body>
+</html>
