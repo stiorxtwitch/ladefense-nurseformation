@@ -1,84 +1,40 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QCM A - UAE 1 : Les Bases de l'Infirmier</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background: #f8f9fa;
-            padding: 20px;
-        }
-        .container {
-            max-width: 960px;
-            margin: auto;
-            background: #fff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-        }
-        h1 {
-            color: #C64E4F;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .question {
-            margin: 30px 0;
-            font-weight: bold;
-        }
-        .option {
-            display: block;
-            margin: 15px 0;
-            padding: 15px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-        button {
-            background: #C64E4F;
-            color: white;
-            padding: 15px 40px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.2rem;
-            cursor: pointer;
-            margin: 40px auto;
-            display: block;
-        }
-        button:disabled {
-            background: #aaa;
-            cursor: not-allowed;
-        }
-        #result {
-            margin-top: 30px;
-            font-size: 1.4rem;
-            text-align: center;
-            font-weight: bold;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QCM A - UAE 1 : Les Bases de l'Infirmier</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+body { font-family: 'Arial', sans-serif; background:#f8f9fa; padding:20px; }
+.container { max-width:960px; margin:auto; background:#fff; padding:30px; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.08); }
+h1 { color:#C64E4F; text-align:center; margin-bottom:30px; }
+.question { margin:30px 0; font-weight:bold; }
+.option { display:block; margin:15px 0; padding:15px; border:1px solid #ccc; border-radius:8px; cursor:pointer; }
+button { background:#C64E4F; color:#fff; padding:15px 40px; border:none; border-radius:8px; font-size:1.2rem; cursor:pointer; margin:40px auto; display:block; }
+button:disabled { background:#aaa; cursor:not-allowed; }
+#result { margin-top:30px; font-size:1.4rem; text-align:center; font-weight:bold; }
+</style>
 </head>
-
 <body>
 
 <div class="container">
-    <h1>QCM A - UAE 1 : Les Bases de l'Infirmier</h1>
-    <div id="quiz"></div>
-    <button id="submit">Valider mes réponses</button>
-    <div id="result"></div>
+<h1>QCM A - UAE 1 : Les Bases de l'Infirmier</h1>
+<div id="quiz"></div>
+<button id="submit">Valider mes réponses</button>
+<div id="result"></div>
 </div>
 
 <script>
 /* ===================== SUPABASE ===================== */
-const supabase = window.supabase.createClient(
-    'https://sevrfgivcpefyykuffti.supabase.co',
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNldnJmZ2l2Y3BlZnl5a3VmZnRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5NDI1NTMsImV4cCI6MjA3ODUxODU1M30.YZnkSHsVWKQEhfU7xYfWyTFmtkM28Zuzdu7Y1sjBXQc'
-);
+const supabaseUrl = 'https://sevrfgivcpefyykuffti.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNldnJmZ2l2Y3BlZnl5a3VmZnRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5NDI1NTMsImV4cCI6MjA3ODUxODU1M30.YZnkSHsVWKQEhfU7xYfWyTFmtkM28Zuzdu7Y1sjBXQc';
 
+const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+/* ===================== AUTH ===================== */
 const currentUser = localStorage.getItem('currentUser');
-if (!currentUser) location.href = 'login.html';
+if(!currentUser) location.href='login.html';
 
 /* ===================== QUESTIONS ===================== */
 const questionsPool = [
@@ -105,64 +61,50 @@ const questionsPool = [
 ];
 
 /* ===================== QUIZ ===================== */
-const selectedQuestions = questionsPool.sort(() => Math.random() - 0.5).slice(0, 20);
+const selectedQuestions = questionsPool.sort(()=>Math.random()-0.5).slice(0,20);
 const quizDiv = document.getElementById('quiz');
-
 selectedQuestions.forEach((q,i)=>{
-    const d = document.createElement('div');
-    d.className = 'question';
-    d.innerHTML = `<p>${i+1}. ${q.q}</p>`;
+    const div = document.createElement('div');
+    div.className='question';
+    div.innerHTML=`<p>${i+1}. ${q.q}</p>`;
     q.o.sort(()=>Math.random()-0.5).forEach(opt=>{
-        d.innerHTML += `<label class="option">
-            <input type="radio" name="q${i}" value="${opt}"> ${opt}
-        </label>`;
+        const label=document.createElement('label');
+        label.className='option';
+        label.innerHTML=`<input type="radio" name="q${i}" value="${opt}"> ${opt}`;
+        div.appendChild(label);
     });
-    quizDiv.appendChild(d);
+    quizDiv.appendChild(div);
 });
 
-/* ===================== VALIDATION ===================== */
-document.getElementById('submit').onclick = async () => {
-    let score = 0;
-
+/* ===================== SUBMIT ===================== */
+document.getElementById('submit').onclick=async()=>{
+    let score=0;
     selectedQuestions.forEach((q,i)=>{
-        const r = document.querySelector(`input[name="q${i}"]:checked`);
-        if (r && r.value === q.a) score++;
+        const sel=document.querySelector(`input[name="q${i}"]:checked`);
+        if(sel && sel.value===q.a) score++;
     });
 
-    const { data } = await supabase
-        .from('users')
-        .select('essaiA,evaluationA')
-        .eq('username', currentUser)
-        .single();
+    try{
+        const {data} = await supabaseClient.from('users').select('essaiA,evaluationA').eq('username',currentUser).single();
+        let essais = (data?.essaiA || 0)+1;
 
-    let essais = data.essaiA || 0;
-
-    if (essais >= 3 && (data.evaluationA || 0) < 12) {
-        document.getElementById('result').innerHTML = "❌ Nombre d’essais épuisé.";
-        document.getElementById('submit').disabled = true;
-        return;
-    }
-
-    essais++;
-
-    if (score >= 12) {
-        await supabase.from('users')
-            .update({ evaluationA: score, essaiA: essais })
-            .eq('username', currentUser);
-
-        document.getElementById('result').innerHTML =
-            `✅ Réussi : ${score}/20<br>Retour au dashboard...`;
-        setTimeout(()=>location.href='dashboard.html',3000);
-    } else {
-        await supabase.from('users')
-            .update({ essaiA: essais })
-            .eq('username', currentUser);
-
-        document.getElementById('result').innerHTML =
-            `❌ Échec : ${score}/20<br>Essais restants : ${3 - essais}`;
+        if(score>=12){
+            await supabaseClient.from('users').update({evaluationA:score, essaiA:essais}).eq('username',currentUser);
+            document.getElementById('result').innerHTML=`✅ Réussi : ${score}/20<br>Retour au dashboard...`;
+            setTimeout(()=>location.href='dashboard.html',3000);
+        }else{
+            await supabaseClient.from('users').update({essaiA:essais}).eq('username',currentUser);
+            document.getElementById('result').innerHTML=`❌ Échec : ${score}/20<br>Essais restants : ${3-essais}`;
+            if(essais>=3){
+                document.getElementById('result').innerHTML+=`<br><strong style="color:#900">3 essais épuisés. Contactez l'administrateur.</strong>`;
+                document.getElementById('submit').disabled=true;
+            }
+        }
+    }catch(err){
+        document.getElementById('result').innerHTML=`<br><strong style="color:#d00">Erreur de sauvegarde : ${err.message}</strong>`;
+        console.error(err);
     }
 };
 </script>
-
 </body>
 </html>
