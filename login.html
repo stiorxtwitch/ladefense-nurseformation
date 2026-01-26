@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connexion - UE Infirmier Urgentiste Militaire</title>
     <link rel="icon" type="image/png" href="https://i.imgur.com/TpQXi2f.png">
-    <!-- Chargement unique et propre de Supabase (UMD version) -->
+    <!-- Supabase UMD (chargement unique et sûr) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <style>
         body {
@@ -109,7 +109,7 @@
         <div class="form-box">
             <h1>Connexion au système UE</h1>
             <form id="loginForm">
-                <input type="text" id="usernamename" placeholder="Nom d'utilisateur" required autocomplete="off">
+                <input type="text" id="user" placeholder="Nom d'utilisateur" required autocomplete="off">
                 <input type="password" id="password" placeholder="Mot de passe" required autocomplete="off">
                 <button type="submit">Se connecter</button>
             </form>
@@ -122,17 +122,16 @@
     </footer>
 
     <script>
-        // Supabase est chargé via UMD → supabase est global
+        // Supabase chargé via UMD → window.supabase est disponible
         const supabaseUrl = 'https://sevrfgivcpefyykuffti.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNldnJmZ2l2Y3BlZnl5a3VmZnRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5NDI1NTMsImV4cCI6MjA3ODUxODU1M30.YZnkSHsVWKQEhfU7xYfWyTFmtkM28Zuzdu7Y1sjBXQc';
 
-        // Utilise directement window.supabase (pas besoin de recréer)
         const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const usernameInput = document.getElementById('username').value.trim();
+            const userInput = document.getElementById('user').value.trim();
             const passwordInput = document.getElementById('password').value;
             const message = document.getElementById('message');
 
@@ -141,15 +140,21 @@
 
             try {
                 const { data, error } = await supabaseClient
-                    .from('usernames')
-                    .select('username, password')
-                    .eq('username', usernameInput)
+                    .from('users')
+                    .select('user, password')
+                    .eq('user', userInput)
                     .single();
 
-                if (error || !data) {
+                if (error) {
+                    console.error('Supabase error:', error);
+                    message.style.color = '#d00';
+                    message.textContent = 'Erreur serveur : ' + error.message;
+                    return;
+                }
+
+                if (!data) {
                     message.style.color = '#d00';
                     message.textContent = 'Utilisateur introuvable.';
-                    console.error('Supabase error:', error);
                     return;
                 }
 
@@ -160,11 +165,11 @@
                 }
 
                 // Connexion réussie
-                localStorage.setItem('currentusername', usernameInput);
+                localStorage.setItem('currentUser', userInput);
                 message.style.color = '#4CAF50';
                 message.textContent = 'Connexion réussie ! Redirection dans 2 secondes...';
                 setTimeout(() => {
-                    window.location.href = 'dashboard.html'; // ou quizA.html si tu préfères commencer directement
+                    window.location.href = 'dashboard.html';
                 }, 2000);
 
             } catch (err) {
