@@ -1,98 +1,128 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QCM E - UAE 5 : Les Injections</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        body { font-family:Arial,sans-serif; background:#f8f9fa; color:#000; padding:20px; }
-        .container { max-width:900px; margin:auto; background:#fff; padding:30px; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.1); }
-        h1 { color:#C64E4F; text-align:center; margin-bottom:20px; }
-        .question { margin:30px 0; font-size:1.25rem; font-weight:bold; }
-        .option { margin:12px 0; padding:12px; border:1px solid #ddd; border-radius:8px; cursor:pointer; transition:0.2s; }
-        .option:hover { background:#f0f8ff; }
-        button { background:#C64E4F; color:white; padding:16px 40px; border:none; border-radius:8px; font-size:1.3rem; cursor:pointer; margin:30px auto; display:block; }
-        button:disabled { background:#aaa; cursor:not-allowed; }
-        #result { margin-top:40px; font-size:1.6rem; text-align:center; font-weight:bold; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QCM E - Injections IV / IM / SC / ID</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+body { font-family:'Arial',sans-serif; background:#f8f9fa; padding:20px; }
+.container { max-width:960px; margin:auto; background:#fff; padding:30px; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.08); }
+h1 { color:#C64E4F; text-align:center; margin-bottom:30px; }
+.question { margin:30px 0; font-weight:bold; }
+.option { display:block; margin:15px 0; padding:15px; border:1px solid #ccc; border-radius:8px; cursor:pointer; }
+button { background:#C64E4F; color:#fff; padding:15px 40px; border:none; border-radius:8px; font-size:1.2rem; cursor:pointer; margin:40px auto; display:block; }
+button:disabled { background:#aaa; cursor:not-allowed; }
+#result { margin-top:30px; font-size:1.4rem; text-align:center; font-weight:bold; }
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1>QCM E - UAE 5 : Les Injections</h1>
-        <div id="quiz"></div>
-        <button id="submit">Valider mes réponses</button>
-        <div id="result"></div>
-    </div>
 
-    <script>
-        const supabase = Supabase.createClient('https://sevrfgivcpefyykuffti.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNldnJmZ2l2Y3BlZnl5a3VmZnRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5NDI1NTMsImV4cCI6MjA3ODUxODU1M30.YZnkSHsVWKQEhfU7xYfWyTFmtkM28Zuzdu7Y1sjBXQc');
+<div class="container">
+<h1>QCM E - Injections IV / IM / SC / ID</h1>
+<div id="quiz"></div>
+<button id="submit">Valider mes réponses</button>
+<div id="result"></div>
+</div>
 
-        const user = localStorage.getItem('currentUser');
-        if (!user) window.location.href = 'login.html';
+<script>
+/* ===================== SUPABASE ===================== */
+const supabaseUrl = 'https://sevrfgivcpefyykuffti.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNldnJmZ2l2Y3BlZnl5a3VmZnRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5NDI1NTMsImV4cCI6MjA3ODUxODU1M30.YZnkSHsVWKQEhfU7xYfWyTFmtkM28Zuzdu7Y1sjBXQc';
+const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-        // Vérifie si le QCM D est validé
-        (async () => {
-            const { data } = await supabase.from('users').select('evaluationD').eq('user', user).single();
-            if (data.evaluationD < 12) {
-                document.getElementById('result').innerHTML = 'Vous devez valider le QCM D avant de continuer.';
+/* ===================== AUTH ===================== */
+const currentUser = localStorage.getItem('currentUser');
+if(!currentUser) location.href='login.html';
+
+/* ===================== QUESTIONS ===================== */
+const questionsPool = [
+{ q:"Site IV préféré ?", o:["Deltoïde","Avant-bras","Cuisse","Abdomen"], a:"Avant-bras" },
+{ q:"Angle d’insertion IV ?", o:["5°","15-30°","45°","90°"], a:"15-30°" },
+{ q:"Cathéter IV recommandé ?", o:["14G","16G","18-20G","24G"], a:"18-20G" },
+{ q:"Flush IV standard ?", o:["1-2 ml","3-5 ml","5-10 ml","15 ml"], a:"5-10 ml" },
+{ q:"Dose adrénaline IV en RCP ?", o:["0.1 mg","0.3 mg","0.5 mg","1 mg"], a:"1 mg" },
+{ q:"Dose morphine IV ?", o:["1 mg","2-5 mg","10 mg","15 mg"], a:"2-5 mg" },
+{ q:"Dose fentanyl IV ?", o:["10-20 mcg","20-40 mcg","50-100 mcg","200 mcg"], a:"50-100 mcg" },
+{ q:"Dose kétamine IV bolus ?", o:["5 mg","10-30 mg","50 mg","100 mg"], a:"10-30 mg" },
+{ q:"Volume bolus Ringer/NaCl ?", o:["100 ml","250 ml","500-1000 ml","1500 ml"], a:"500-1000 ml" },
+{ q:"Dose midazolam IV ?", o:["0.5 mg","1 mg","2-5 mg","10 mg"], a:"2-5 mg" },
+{ q:"Site IM préféré pour 3-5 ml ?", o:["Deltoïde","Vaste latéral cuisse","Avant-bras","Abdomen"], a:"Vaste latéral cuisse" },
+{ q:"Angle injection IM ?", o:["5°","15°","45°","90°"], a:"90°" },
+{ q:"Aspirer en IM pendant ?", o:["1 s","3 s","5-10 s","Jamais"], a:"5-10 s" },
+{ q:"Dose morphine IM ?", o:["1-2 mg","3-5 mg","5-10 mg","15 mg"], a:"5-10 mg" },
+{ q:"Dose kétamine IM ?", o:["5 mg","10 mg","0.5-1 mg/kg","2 mg/kg"], a:"0.5-1 mg/kg" },
+{ q:"Site SC préféré ?", o:["Deltoïde","Abdomen","Cuisse interne","Fesse"], a:"Abdomen" },
+{ q:"Angle injection SC ?", o:["5°","15°","45°","90°"], a:"45°" },
+{ q:"Volume max SC ?", o:["0.5 ml","1-2 ml","3-5 ml","10 ml"], a:"1-2 ml" },
+{ q:"Injection ID : angle ?", o:["1°","5-15°","30°","45°"], a:"5-15°" },
+{ q:"Signe de réussite ID ?", o:["Saignement","Douleur forte","Papule blanche 5-10 mm","Aucun"], a:"Papule blanche 5-10 mm" }
+];
+
+/* ===================== GENERATION DU QUIZ ===================== */
+const selectedQuestions = questionsPool.sort(()=>Math.random()-0.5).slice(0,20);
+const quizDiv = document.getElementById('quiz');
+selectedQuestions.forEach((q,i)=>{
+    const div = document.createElement('div');
+    div.className='question';
+    div.innerHTML=`<p>${i+1}. ${q.q}</p>`;
+    q.o.sort(()=>Math.random()-0.5).forEach(opt=>{
+        const label = document.createElement('label');
+        label.className='option';
+        label.innerHTML=`<input type="radio" name="q${i}" value="${opt}"> ${opt}`;
+        div.appendChild(label);
+    });
+    quizDiv.appendChild(div);
+});
+
+/* ===================== SUBMIT ===================== */
+document.getElementById('submit').onclick = async ()=>{
+    let score = 0;
+    selectedQuestions.forEach((q,i)=>{
+        const sel = document.querySelector(`input[name="q${i}"]:checked`);
+        if(sel && sel.value === q.a) score++;
+    });
+
+    const resultDiv = document.getElementById('result');
+
+    try{
+        const { data, error } = await supabaseClient
+            .from('users')
+            .select('essaie,evaluatione')
+            .eq('username', currentUser)
+            .single();
+        if(error){ console.error(error); resultDiv.innerHTML="Erreur lecture essais"; return; }
+
+        let essais = (data?.essaie || 0) + 1;
+
+        if(score>=12){
+            const { error:updateError } = await supabaseClient
+                .from('users')
+                .update({ evaluatione: score, essaie: essais })
+                .eq('username', currentUser);
+            if(updateError){ console.error(updateError); resultDiv.innerHTML="Erreur sauvegarde"; return; }
+
+            resultDiv.innerHTML=`✅ Réussi : ${score}/20<br>Retour au dashboard...`;
+            setTimeout(()=> location.href='dashboard.html',3000);
+        }else{
+            const { error:updateError } = await supabaseClient
+                .from('users')
+                .update({ essaie: essais })
+                .eq('username', currentUser);
+            if(updateError){ console.error(updateError); resultDiv.innerHTML="Erreur sauvegarde"; return; }
+
+            resultDiv.innerHTML=`❌ Échec : ${score}/20<br>Essais restants : ${3-essais}`;
+            if(essais>=3){
+                resultDiv.innerHTML+=`<br><strong style="color:#900">3 essais épuisés. Contactez l'administrateur.</strong>`;
                 document.getElementById('submit').disabled = true;
             }
-        })();
+        }
 
-        // Emplacement pour tes 35 questions différentes. Ajoute-les ici
-        const questionsPool = [
-            { q: "Exemple de question 1 ?", o: ["Opt1", "Opt2", "Opt3", "Toutes les réponses", "Aucune des réponses"], a: "Opt1" },
-            { q: "Exemple de question 2 ?", o: ["OptA", "OptB", "OptC", "Toutes les réponses", "Aucune des réponses"], a: "OptB" },
-            // Ajoute tes 33 autres questions ici au même format
-        ];
-
-        function shuffle(arr) { return arr.sort(() => Math.random() - 0.5); }
-        const questions = shuffle([...questionsPool]).slice(0, 20);
-
-        const quizDiv = document.getElementById('quiz');
-        questions.forEach((q, i) => {
-            const div = document.createElement('div');
-            div.className = 'question';
-            div.innerHTML = `<p>${i+1}. ${q.q}</p>`;
-            shuffle(q.o).forEach(opt => {
-                div.innerHTML += `<label class="option"><input type="radio" name="q${i}" value="${opt}"> ${opt}</label><br>`;
-            });
-            quizDiv.appendChild(div);
-        });
-
-        // Déconnexion si on quitte la page
-        window.onbeforeunload = () => {
-            localStorage.removeItem('currentUser');
-            return "Attention : quitter cette page vous déconnectera et vous devrez recommencer l'examen.";
-        };
-
-        document.getElementById('submit').onclick = async () => {
-            let score = 0;
-            questions.forEach((q, i) => {
-                const selected = document.querySelector(`input[name="q${i}"]:checked`);
-                if (selected && selected.value === q.a) score++;
-            });
-
-            const result = document.getElementById('result');
-            result.innerHTML = `Votre score : ${score} / 20<br>`;
-
-            const { data } = await supabase.from('users').select('essaiE').eq('user', user).single();
-            let essais = (data?.essaiE || 0) + 1;
-
-            if (score >= 12) {
-                result.innerHTML += "<span style='color:green'>Réussi ! Vous avez terminé tous les QCM. Mise à jour de la réussite globale.</span>";
-                await supabase.from('users').update({ evaluationE: score, essaiE: essais, reussite: true }).eq('user', user);
-                setTimeout(() => window.location.href = 'success.html', 3000);
-            } else {
-                result.innerHTML += "<span style='color:red'>Échec.</span><br>Essais restants : " + (3 - essais);
-                await supabase.from('users').update({ essaiE: essais }).eq('user', user);
-                if (essais >= 3) {
-                    result.innerHTML += "<br><strong style='color:#900'>3 essais épuisés. Contactez l'administrateur.</strong>";
-                    document.getElementById('submit').disabled = true;
-                }
-            }
-        };
-    </script>
+    }catch(err){
+        console.error(err);
+        resultDiv.innerHTML=`<strong style="color:#d00">Erreur : ${err.message}</strong>`;
+    }
+};
+</script>
 </body>
 </html>
