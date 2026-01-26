@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - UE Infirmier Urgentiste Militaire</title>
+    <title>Dashboard UE - Infirmier Urgentiste Militaire</title>
     <link rel="icon" type="image/png" href="https://i.imgur.com/TpQXi2f.png">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <style>
         * { margin:0; padding:0; box-sizing:border-box; }
         body {
@@ -19,7 +19,7 @@
             position: fixed;
             top: 0;
             width: 100%;
-            background: rgba(255,255,255,0.95);
+            background: rgba(255,255,255,0.97);
             backdrop-filter: blur(10px);
             z-index: 1000;
             padding: 1rem 5%;
@@ -38,12 +38,7 @@
         .logo img { height: 55px; margin-right: 12px; }
         nav ul { display: flex; list-style: none; }
         nav ul li { margin-left: 2.5rem; }
-        nav ul li a {
-            color: #333;
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s;
-        }
+        nav ul li a { color: #333; text-decoration: none; font-weight: 500; transition: color 0.3s; cursor: pointer; }
         nav ul li a:hover { color: #C64E4F; }
         .dashboard {
             padding: 8rem 5% 6rem;
@@ -56,18 +51,18 @@
             color: #C64E4F;
             margin-bottom: 3rem;
         }
-        .uae-list {
+        .uae-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
         }
         .uae-card {
             background: #fff;
             padding: 2rem;
             border-radius: 16px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
             text-align: left;
-            transition: transform 0.3s, box-shadow 0.3s;
             cursor: pointer;
         }
         .uae-card:hover {
@@ -75,43 +70,38 @@
             box-shadow: 0 15px 30px rgba(0,0,0,0.15);
         }
         .uae-card.locked {
-            background: #f8f8f8;
+            background: #f5f5f5;
             cursor: not-allowed;
-            opacity: 0.6;
+            opacity: 0.65;
         }
         .uae-card.locked:hover {
             transform: none;
             box-shadow: 0 8px 20px rgba(0,0,0,0.08);
         }
-        .uae-card h2 {
-            font-size: 1.8rem;
+        .uae-card h3 {
+            font-size: 1.6rem;
             color: #C64E4F;
-            margin-bottom: 1rem;
+            margin-bottom: 0.8rem;
         }
         .uae-card p {
             font-size: 1.1rem;
             color: #555;
         }
-        .uae-card .status {
-            font-size: 1rem;
-            color: #4CAF50;
+        .status {
             margin-top: 1rem;
             font-weight: bold;
+            font-size: 1rem;
         }
-        .uae-card.locked .status {
-            color: #d00;
-        }
+        .status.valid { color: #4CAF50; }
+        .status.locked { color: #d32f2f; }
+        .status.available { color: #1976D2; }
+        #message { margin-top: 2rem; color: #d00; font-weight: bold; }
         footer {
             text-align: center;
             padding: 3rem 5%;
             background: #f0f0f0;
             color: #666;
             font-size: 1rem;
-        }
-        #message {
-            margin-top: 2rem;
-            color: #d00;
-            font-weight: bold;
         }
     </style>
 </head>
@@ -125,80 +115,106 @@
         <nav>
             <ul>
                 <li><a href="index.html">Accueil</a></li>
-                <li><a href="#" onclick="logout()">Déconnexion</a></li>
+                <li><a onclick="logout()">Déconnexion</a></li>
             </ul>
         </nav>
     </header>
 
     <section class="dashboard">
-        <h1>Dashboard UE</h1>
-        <div class="uae-list" id="uaeList"></div>
+        <h1>Vos Unités d'Enseignement</h1>
+        <div class="uae-grid" id="uaeGrid"></div>
         <div id="message"></div>
     </section>
 
     <footer>
-        © La Défense Belge - Tous droits réservés
+        © La Défense Belge - Composante Médicale - Tous droits réservés
     </footer>
 
     <script>
         const supabaseUrl = 'https://sevrfgivcpefyykuffti.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNldnJmZ2l2Y3BlZnl5a3VmZnRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5NDI1NTMsImV4cCI6MjA3ODUxODU1M30.YZnkSHsVWKQEhfU7xYfWyTFmtkM28Zuzdu7Y1sjBXQc';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-        const user = localStorage.getItem('currentUser');
-        if (!user) {
+        const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        const currentUser = localStorage.getItem('currentUser');
+        if (!currentUser) {
             window.location.href = 'login.html';
-            return;
         }
 
-        const uaeModules = [
-            { id: 'A', title: 'UAE 1 : Les Bases de l\'Infirmier', desc: 'Anatomie, physiologie, protocoles de base.', quiz: 'quizA.html', evalField: 'evaluationA' },
-            { id: 'B', title: 'UAE 2 : Soins Intensif Aide Médicale Urgente (SIAMU)', desc: 'Soins avancés, ACLS, ABCDE.', quiz: 'quizB.html', evalField: 'evaluationB' },
-            { id: 'C', title: 'UAE 3 : TCCC / TECC', desc: 'Tactical Combat Casualty Care.', quiz: 'quizC.html', evalField: 'evaluationC' },
-            { id: 'D', title: 'UAE 4 : Le Déploiement Extérieur / Formation OPEX', desc: 'Gestion OPEX, pathologies tropicales.', quiz: 'quizD.html', evalField: 'evaluationD' },
-            { id: 'E', title: 'UAE 5 : Les Injections', desc: 'Techniques d\'injections IV, IM, SC, ID.', quiz: 'quizE.html', evalField: 'evaluationE' }
+        const modules = [
+            { id: 'A', title: 'UAE 1 : Les Bases de l\'Infirmier', desc: 'Anatomie, physiologie, protocoles de base, premiers secours.', file: 'quizA.html', eval: 'evaluationA' },
+            { id: 'B', title: 'UAE 2 : Soins Intensif Aide Médicale Urgente (SIAMU)', desc: 'Soins avancés, ACLS, ABCDE, pharmacologie urgences.', file: 'quizB.html', eval: 'evaluationB' },
+            { id: 'C', title: 'UAE 3 : TCCC / TECC', desc: 'Tactical Combat Casualty Care / Tactical Emergency Casualty Care.', file: 'quizC.html', eval: 'evaluationC' },
+            { id: 'D', title: 'UAE 4 : Le Déploiement Extérieur / Formation OPEX', desc: 'Gestion OPEX, pathologies tropicales, CBRN.', file: 'quizD.html', eval: 'evaluationD' },
+            { id: 'E', title: 'UAE 5 : Les Injections', desc: 'Techniques IV, IM, SC, ID – sites, doses, procédures.', file: 'quizE.html', eval: 'evaluationE' }
         ];
 
         async function loadDashboard() {
-            const { data, error } = await supabase.from('users').select('*').eq('user', user).single();
-            if (error) {
-                document.getElementById('message').textContent = 'Erreur lors du chargement des données.';
-                return;
-            }
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = 'Chargement de votre progression...';
 
-            const uaeList = document.getElementById('uaeList');
-            uaeList.innerHTML = '';
+            try {
+                const { data, error } = await supabaseClient
+                    .from('users')
+                    .select('*')
+                    .eq('user', currentUser)
+                    .single();
 
-            let unlocked = true; // UAE 1 est toujours débloqué
+                if (error) throw error;
+                if (!data) throw new Error('Utilisateur non trouvé dans la base.');
 
-            uaeModules.forEach(module => {
-                const card = document.createElement('div');
-                card.className = 'uae-card';
+                const grid = document.getElementById('uaeGrid');
+                grid.innerHTML = '';
 
-                const status = data[module.evalField] >= 12 ? 'Validé' : (unlocked ? 'Disponible' : 'Verrouillé');
-                const isLocked = !unlocked;
+                let previousPassed = true; // UAE 1 toujours débloqué
 
-                card.innerHTML = `
-                    <h2>${module.title}</h2>
-                    <p>${module.desc}</p>
-                    <div class="status">${status}</div>
-                `;
+                modules.forEach(mod => {
+                    const card = document.createElement('div');
+                    card.className = 'uae-card';
 
-                if (isLocked) {
-                    card.classList.add('locked');
-                } else {
-                    card.addEventListener('click', () => window.location.href = module.quiz);
+                    const score = data[mod.eval] || 0;
+                    let statusText = 'Non commencé';
+                    let statusClass = 'available';
+
+                    if (score >= 12) {
+                        statusText = `Validé (Score: ${score}/20)`;
+                        statusClass = 'valid';
+                    } else if (!previousPassed) {
+                        statusText = 'Verrouillé (précédent non validé)';
+                        statusClass = 'locked';
+                        card.classList.add('locked');
+                    } else {
+                        statusText = 'Disponible';
+                    }
+
+                    card.innerHTML = `
+                        <h3>${mod.title}</h3>
+                        <p>${mod.desc}</p>
+                        <div class="status ${statusClass}">${statusText}</div>
+                    `;
+
+                    if (previousPassed && score < 12) {
+                        card.addEventListener('click', () => {
+                            window.location.href = mod.file;
+                        });
+                    }
+
+                    grid.appendChild(card);
+
+                    previousPassed = score >= 12;
+                });
+
+                if (data.reussite) {
+                    const successMsg = document.createElement('div');
+                    successMsg.innerHTML = '<p style="color:#4CAF50; font-weight:bold; font-size:1.4rem; margin-top:3rem;">Félicitations ! Vous avez validé toutes les UAE.</p>';
+                    grid.appendChild(successMsg);
                 }
 
-                uaeList.appendChild(card);
-
-                unlocked = data[module.evalField] >= 12;
-            });
-
-            if (data.reussite) {
-                const successMsg = document.createElement('div');
-                successMsg.innerHTML = '<p style="color: #4CAF50; font-weight: bold; margin-top: 2rem;">Toutes les UAE sont validées ! Certification complète.</p>';
-                uaeList.appendChild(successMsg);
+                messageDiv.textContent = '';
+            } catch (err) {
+                messageDiv.style.color = '#d00';
+                messageDiv.textContent = 'Erreur de chargement : ' + err.message;
+                console.error('Erreur Supabase :', err);
             }
         }
 
