@@ -148,7 +148,6 @@
         const currentUser = localStorage.getItem('currentUser');
         if (!currentUser) {
             window.location.href = 'login.html';
-            return; // Correction du 'illegal return' – maintenant dans le scope principal
         }
 
         const modules = [
@@ -176,9 +175,9 @@
                 const grid = document.getElementById('uaeGrid');
                 grid.innerHTML = '';
 
-                let previousPassed = true; // UAE 1 toujours débloqué
+                let previousPassed = true; // UAE 1 toujours débloqué au départ
 
-                modules.forEach(mod => {
+                modules.forEach((mod, index) => {
                     const card = document.createElement('div');
                     card.className = 'uae-card';
 
@@ -204,7 +203,7 @@
                         <div class="status ${statusClass}">${statusText}</div>
                     `;
 
-                    // Clique seulement si disponible et non validé
+                    // Clic seulement si disponible ET non validé
                     if (previousPassed && score < 12) {
                         card.addEventListener('click', () => {
                             window.location.href = mod.file;
@@ -213,6 +212,7 @@
 
                     grid.appendChild(card);
 
+                    // Mise à jour pour la carte SUIVANTE
                     previousPassed = score >= 12;
                 });
 
