@@ -28,8 +28,8 @@ button:disabled { background:#aaa; cursor:not-allowed; }
 <script>
 /* ===================== SUPABASE ===================== */
 const supabaseUrl = 'https://sevrfgivcpefyykuffti.supabase.co';
-const supabaseKey = 'VOTRE_SUPABASE_KEY_ICI';
-const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNldnJmZ2l2Y3BlZnl5a3VmZnRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5NDI1NTMsImV4cCI6MjA3ODUxODU1M30.YZnkSHsVWKQEhfU7xYfWyTFmtkM28Zuzdu7Y1sjBXQc';
+const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
 /* ===================== AUTH ===================== */
 const currentUser = localStorage.getItem('currentUser');
@@ -41,25 +41,26 @@ const questionsPool = [
 { q:"À partir de quelle perte sanguine déclenche-t-on un choc (TA <90/60) ?", o:["5%","10%","15%","20%","Toutes les réponses"], a:"15%" },
 { q:"Quelle est la fréquence respiratoire normale chez l'adulte ?", o:["8-12/min","12-20/min","20-30/min","30-40/min","Aucune des réponses"], a:"12-20/min" },
 { q:"Quelle est la valeur normale de SpO2 ?", o:[">90%",">92%",">95%",">98%","Aucune des réponses"], a:">95%" },
-{ q:"Quelle est la plage normale de PO2 artériel ?", o:["60-80","80-100","100-120","120-140","Toutes les réponses"], a:"80-100" },
-{ q:"Quelle est la plage normale de PCO2 artériel ?", o:["25-35","35-45","45-55","55-65","Aucune"], a:"35-45" },
-{ q:"Quels sont les trois signes typiques d'une fracture ?", o:["Gonflement","Ecchymose","Déformation","Les trois","Toutes"], a:"Les trois" },
-{ q:"Quelle est la FC normale ?", o:["50-90","60-100","80-120","100-140","Aucune"], a:"60-100" },
-{ q:"Quelle est la température normale ?", o:["35.5-36.5","36.5-37.5","37.5-38.5","38.5-39.5","Aucune"], a:"36.5-37.5" },
-{ q:"Quel est le score GCS normal ?", o:["10","12","15","18","Toutes"], a:"15" },
-{ q:"Dans l'ABC, que signifie A ?", o:["Airway","Breathing","Circulation","Défibrillation","Toutes"], a:"Airway" },
-{ q:"Ratio RCP adulte ?", o:["15:2","30:2","45:3","60:4","Aucune"], a:"30:2" },
-{ q:"Fréquence compressions RCP ?", o:["80-100","100-120","120-140","140-160","Toutes"], a:"100-120" },
-{ q:"Profondeur compressions ?", o:["3-4cm","4-5cm","5-6cm","6-7cm","Aucune"], a:"5-6cm" },
-{ q:"Durée d'un cycle RCP ?", o:["1min","2min","3min","4min","Toutes"], a:"2min" },
-{ q:"Quand utiliser un DAE ?", o:["FV/FA","Asystolie","Toujours","Jamais","Aucune"], a:"FV/FA" },
-{ q:"Antalgique de première intention ?", o:["Ibuprofène","Paracétamol","Aspirine","Morphine","Toutes"], a:"Paracétamol" },
-{ q:"Dose Paracétamol ?", o:["10mg/kg","15mg/kg","20mg/kg","25mg/kg","Aucune"], a:"15mg/kg" },
-{ q:"AINS ?", o:["Paracétamol","Ibuprofène","Aspirine","Morphine","Toutes"], a:"Ibuprofène" },
-{ q:"Anti-plaquettaire ?", o:["Paracétamol","Ibuprofène","Aspirine","Morphine","Toutes"], a:"Aspirine" }
+{ q:"Quelle est la plage normale de PO2 artériel ?", o:["60-80 mmHg","80-100 mmHg","100-120 mmHg","120-140 mmHg","Toutes les réponses"], a:"80-100 mmHg" },
+{ q:"Quelle est la plage normale de PCO2 artériel ?", o:["25-35 mmHg","35-45 mmHg","45-55 mmHg","55-65 mmHg","Aucune des réponses"], a:"35-45 mmHg" },
+{ q:"Quels sont les trois signes typiques d'une fracture ?", o:["Gonflement seul","Ecchymose seule","Déformation seule","Gonflement, ecchymose, déformation","Toutes les réponses"], a:"Gonflement, ecchymose, déformation" },
+{ q:"Quelle est la fréquence cardiaque normale (FC) ?", o:["50-90 bpm","60-100 bpm","80-120 bpm","100-140 bpm","Aucune des réponses"], a:"60-100 bpm" },
+{ q:"Quelle est la plage normale de tension artérielle (TA) ?", o:["80-120/50-80 mmHg","100-140/60-90 mmHg","120-160/70-100 mmHg","140-180/80-110 mmHg","Toutes les réponses"], a:"100-140/60-90 mmHg" },
+{ q:"Quelle est la température corporelle normale ?", o:["35.5-36.5°C","36.5-37.5°C","37.5-38.5°C","38.5-39.5°C","Aucune des réponses"], a:"36.5-37.5°C" },
+{ q:"Quel est le score GCS normal ?", o:["10","12","15","18","Toutes les réponses"], a:"15" },
+{ q:"Quelle est la composante 'yeux' dans le GCS ?", o:["3","4","5","6","Aucune des réponses"], a:"4" },
+{ q:"Quelle est la composante 'verbal' dans le GCS ?", o:["3","4","5","6","Toutes les réponses"], a:"5" },
+{ q:"Quelle est la composante 'moteur' dans le GCS ?", o:["4","5","6","7","Aucune des réponses"], a:"6" },
+{ q:"Dans l'ABC CRB, que signifie 'A' ?", o:["Airway : tête-menton, check 10s respiration","Breathing : écoute poitrine","Circulation : pouls carotide","Défibrillation","Toutes les réponses"], a:"Airway : tête-menton, check 10s respiration" },
+{ q:"Dans l'ABC CRB, que signifie 'B' ?", o:["Airway : tête-menton","Breathing : écoute poitrine, 5-6 cycles secours","Circulation : pouls carotide","Défibrillation","Aucune des réponses"], a:"Breathing : écoute poitrine, 5-6 cycles secours" },
+{ q:"Dans l'ABC CRB, que signifie 'C' ?", o:["Airway : tête-menton","Breathing : écoute poitrine","Circulation : pouls carotide, stop saignement direct","Défibrillation","Toutes les réponses"], a:"Circulation : pouls carotide, stop saignement direct" },
+{ q:"Dans la RCP basique (ERC 2025), quel est le ratio compressions-ventilations ?", o:["15:2","30:2","45:3","60:4","Aucune des réponses"], a:"30:2" },
+{ q:"Quelle est la fréquence des compressions en RCP ?", o:["80-100/min","100-120/min","120-140/min","140-160/min","Toutes les réponses"], a:"100-120/min" },
+{ q:"Quelle est la profondeur des compressions en RCP ?", o:["3-4cm","4-5cm","5-6cm","6-7cm","Aucune des réponses"], a:"5-6cm" },
+{ q:"Quelle est la durée d'un cycle en RCP ?", o:["1min","2min","3min","4min","Toutes les réponses"], a:"2min" }
 ];
 
-/* ===================== GENERATION QUIZ ===================== */
+/* ===================== GENERATION DU QUIZ ===================== */
 const selectedQuestions = questionsPool.sort(()=>Math.random()-0.5).slice(0,20);
 const quizDiv = document.getElementById('quiz');
 selectedQuestions.forEach((q,i)=>{
@@ -67,7 +68,7 @@ selectedQuestions.forEach((q,i)=>{
     div.className='question';
     div.innerHTML=`<p>${i+1}. ${q.q}</p>`;
     q.o.sort(()=>Math.random()-0.5).forEach(opt=>{
-        const label=document.createElement('label');
+        const label = document.createElement('label');
         label.className='option';
         label.innerHTML=`<input type="radio" name="q${i}" value="${opt}"> ${opt}`;
         div.appendChild(label);
@@ -76,7 +77,7 @@ selectedQuestions.forEach((q,i)=>{
 });
 
 /* ===================== SUBMIT ===================== */
-document.getElementById('submit').onclick=async()=>{
+document.getElementById('submit').onclick = async ()=>{
     let score = 0;
     selectedQuestions.forEach((q,i)=>{
         const sel = document.querySelector(`input[name="q${i}"]:checked`);
@@ -85,27 +86,26 @@ document.getElementById('submit').onclick=async()=>{
 
     const resultDiv = document.getElementById('result');
 
-    try {
-        // Lire essais actuels
+    try{
         const { data, error } = await supabaseClient
             .from('users')
-            .select('essaiA,evaluationA')
+            .select('essaia,evaluationa')
             .eq('username', currentUser)
             .single();
         if(error){ console.error(error); resultDiv.innerHTML="Erreur lecture essais"; return; }
 
-        let essais = (data?.essaiA || 0) + 1;
+        let essais = (data?.essaia || 0) + 1;
 
         if(score>=12){
             const { error:updateError } = await supabaseClient
                 .from('users')
-                .update({ evaluationA: score, essaia: essais })
+                .update({ evaluationa: score, essaia: essais })
                 .eq('username', currentUser);
             if(updateError){ console.error(updateError); resultDiv.innerHTML="Erreur sauvegarde"; return; }
 
             resultDiv.innerHTML=`✅ Réussi : ${score}/20<br>Retour au dashboard...`;
             setTimeout(()=> location.href='dashboard.html',3000);
-        } else {
+        }else{
             const { error:updateError } = await supabaseClient
                 .from('users')
                 .update({ essaia: essais })
@@ -115,140 +115,11 @@ document.getElementById('submit').onclick=async()=>{
             resultDiv.innerHTML=`❌ Échec : ${score}/20<br>Essais restants : ${3-essais}`;
             if(essais>=3){
                 resultDiv.innerHTML+=`<br><strong style="color:#900">3 essais épuisés. Contactez l'administrateur.</strong>`;
-                document.getElementById('submit').disabled=true;
+                document.getElementById('submit').disabled = true;
             }
         }
 
-    } catch(err){
-        console.error(err);
-        resultDiv.innerHTML=`<strong style="color:#d00">Erreur : ${err.message}</strong>`;
-    }
-};
-</script>
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>QCM A - UAE 1 : Les Bases de l'Infirmier</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<style>
-body { font-family:'Arial',sans-serif; background:#f8f9fa; padding:20px; }
-.container { max-width:960px; margin:auto; background:#fff; padding:30px; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.08); }
-h1 { color:#C64E4F; text-align:center; margin-bottom:30px; }
-.question { margin:30px 0; font-weight:bold; }
-.option { display:block; margin:15px 0; padding:15px; border:1px solid #ccc; border-radius:8px; cursor:pointer; }
-button { background:#C64E4F; color:#fff; padding:15px 40px; border:none; border-radius:8px; font-size:1.2rem; cursor:pointer; margin:40px auto; display:block; }
-button:disabled { background:#aaa; cursor:not-allowed; }
-#result { margin-top:30px; font-size:1.4rem; text-align:center; font-weight:bold; }
-</style>
-</head>
-<body>
-
-<div class="container">
-<h1>QCM A - UAE 1 : Les Bases de l'Infirmier</h1>
-<div id="quiz"></div>
-<button id="submit">Valider mes réponses</button>
-<div id="result"></div>
-</div>
-
-<script>
-/* ===================== SUPABASE ===================== */
-const supabaseUrl = 'https://sevrfgivcpefyykuffti.supabase.co';
-const supabaseKey = 'VOTRE_SUPABASE_KEY_ICI';
-const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
-
-/* ===================== AUTH ===================== */
-const currentUser = localStorage.getItem('currentUser');
-if(!currentUser) location.href='login.html';
-
-/* ===================== QUESTIONS ===================== */
-const questionsPool = [
-{ q:"Quelle est la débit cardiaque moyen chez l'adulte ?", o:["3L/min","4L/min","5L/min","6L/min","Aucune des réponses"], a:"5L/min" },
-{ q:"À partir de quelle perte sanguine déclenche-t-on un choc (TA <90/60) ?", o:["5%","10%","15%","20%","Toutes les réponses"], a:"15%" },
-{ q:"Quelle est la fréquence respiratoire normale chez l'adulte ?", o:["8-12/min","12-20/min","20-30/min","30-40/min","Aucune des réponses"], a:"12-20/min" },
-{ q:"Quelle est la valeur normale de SpO2 ?", o:[">90%",">92%",">95%",">98%","Aucune des réponses"], a:">95%" },
-{ q:"Quelle est la plage normale de PO2 artériel ?", o:["60-80","80-100","100-120","120-140","Toutes les réponses"], a:"80-100" },
-{ q:"Quelle est la plage normale de PCO2 artériel ?", o:["25-35","35-45","45-55","55-65","Aucune"], a:"35-45" },
-{ q:"Quels sont les trois signes typiques d'une fracture ?", o:["Gonflement","Ecchymose","Déformation","Les trois","Toutes"], a:"Les trois" },
-{ q:"Quelle est la FC normale ?", o:["50-90","60-100","80-120","100-140","Aucune"], a:"60-100" },
-{ q:"Quelle est la température normale ?", o:["35.5-36.5","36.5-37.5","37.5-38.5","38.5-39.5","Aucune"], a:"36.5-37.5" },
-{ q:"Quel est le score GCS normal ?", o:["10","12","15","18","Toutes"], a:"15" },
-{ q:"Dans l'ABC, que signifie A ?", o:["Airway","Breathing","Circulation","Défibrillation","Toutes"], a:"Airway" },
-{ q:"Ratio RCP adulte ?", o:["15:2","30:2","45:3","60:4","Aucune"], a:"30:2" },
-{ q:"Fréquence compressions RCP ?", o:["80-100","100-120","120-140","140-160","Toutes"], a:"100-120" },
-{ q:"Profondeur compressions ?", o:["3-4cm","4-5cm","5-6cm","6-7cm","Aucune"], a:"5-6cm" },
-{ q:"Durée d'un cycle RCP ?", o:["1min","2min","3min","4min","Toutes"], a:"2min" },
-{ q:"Quand utiliser un DAE ?", o:["FV/FA","Asystolie","Toujours","Jamais","Aucune"], a:"FV/FA" },
-{ q:"Antalgique de première intention ?", o:["Ibuprofène","Paracétamol","Aspirine","Morphine","Toutes"], a:"Paracétamol" },
-{ q:"Dose Paracétamol ?", o:["10mg/kg","15mg/kg","20mg/kg","25mg/kg","Aucune"], a:"15mg/kg" },
-{ q:"AINS ?", o:["Paracétamol","Ibuprofène","Aspirine","Morphine","Toutes"], a:"Ibuprofène" },
-{ q:"Anti-plaquettaire ?", o:["Paracétamol","Ibuprofène","Aspirine","Morphine","Toutes"], a:"Aspirine" }
-];
-
-/* ===================== GENERATION QUIZ ===================== */
-const selectedQuestions = questionsPool.sort(()=>Math.random()-0.5).slice(0,20);
-const quizDiv = document.getElementById('quiz');
-selectedQuestions.forEach((q,i)=>{
-    const div = document.createElement('div');
-    div.className='question';
-    div.innerHTML=`<p>${i+1}. ${q.q}</p>`;
-    q.o.sort(()=>Math.random()-0.5).forEach(opt=>{
-        const label=document.createElement('label');
-        label.className='option';
-        label.innerHTML=`<input type="radio" name="q${i}" value="${opt}"> ${opt}`;
-        div.appendChild(label);
-    });
-    quizDiv.appendChild(div);
-});
-
-/* ===================== SUBMIT ===================== */
-document.getElementById('submit').onclick=async()=>{
-    let score = 0;
-    selectedQuestions.forEach((q,i)=>{
-        const sel = document.querySelector(`input[name="q${i}"]:checked`);
-        if(sel && sel.value === q.a) score++;
-    });
-
-    const resultDiv = document.getElementById('result');
-
-    try {
-        // Lire essais actuels
-        const { data, error } = await supabaseClient
-            .from('users')
-            .select('essaiA,evaluationA')
-            .eq('username', currentUser)
-            .single();
-        if(error){ console.error(error); resultDiv.innerHTML="Erreur lecture essais"; return; }
-
-        let essais = (data?.essaiA || 0) + 1;
-
-        if(score>=12){
-            const { error:updateError } = await supabaseClient
-                .from('users')
-                .update({ evaluationA: score, essaia: essais })
-                .eq('username', currentUser);
-            if(updateError){ console.error(updateError); resultDiv.innerHTML="Erreur sauvegarde"; return; }
-
-            resultDiv.innerHTML=`✅ Réussi : ${score}/20<br>Retour au dashboard...`;
-            setTimeout(()=> location.href='dashboard.html',3000);
-        } else {
-            const { error:updateError } = await supabaseClient
-                .from('users')
-                .update({ essaia: essais })
-                .eq('username', currentUser);
-            if(updateError){ console.error(updateError); resultDiv.innerHTML="Erreur sauvegarde"; return; }
-
-            resultDiv.innerHTML=`❌ Échec : ${score}/20<br>Essais restants : ${3-essais}`;
-            if(essais>=3){
-                resultDiv.innerHTML+=`<br><strong style="color:#900">3 essais épuisés. Contactez l'administrateur.</strong>`;
-                document.getElementById('submit').disabled=true;
-            }
-        }
-
-    } catch(err){
+    }catch(err){
         console.error(err);
         resultDiv.innerHTML=`<strong style="color:#d00">Erreur : ${err.message}</strong>`;
     }
