@@ -109,7 +109,7 @@
         <div class="form-box">
             <h1>Connexion au système UE</h1>
             <form id="loginForm">
-                <input type="text" id="user" placeholder="Nom d'utilisateur" required autocomplete="off">
+                <input type="text" id="usernamename" placeholder="Nom d'utilisateur" required autocomplete="off">
                 <input type="password" id="password" placeholder="Mot de passe" required autocomplete="off">
                 <button type="submit">Se connecter</button>
             </form>
@@ -132,7 +132,7 @@
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const userInput = document.getElementById('user').value.trim();
+            const usernameInput = document.getElementById('username').value.trim();
             const passwordInput = document.getElementById('password').value;
             const message = document.getElementById('message');
 
@@ -141,9 +141,9 @@
 
             try {
                 const { data, error } = await supabaseClient
-                    .from('users')
-                    .select('user, password')
-                    .eq('user', userInput)
+                    .from('usernames')
+                    .select('username, password')
+                    .eq('username', usernameInput)
                     .single();
 
                 if (error || !data) {
@@ -160,7 +160,7 @@
                 }
 
                 // Connexion réussie
-                localStorage.setItem('currentUser', userInput);
+                localStorage.setItem('currentusername', usernameInput);
                 message.style.color = '#4CAF50';
                 message.textContent = 'Connexion réussie ! Redirection dans 2 secondes...';
                 setTimeout(() => {
