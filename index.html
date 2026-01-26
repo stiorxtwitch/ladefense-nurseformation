@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UE Infirmier Urgentiste Militaire - La Défense</title>
+    <link rel="icon" type="image/png" href="https://i.imgur.com/TpQXi2f.png">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
+            color: #000;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255,255,255,0.97);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #C64E4F;
+        }
+        .logo img { height: 55px; margin-right: 12px; }
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+        nav ul li { margin-left: 2.5rem; }
+        nav ul li a {
+            color: #333;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        nav ul li a:hover { color: #C64E4F; }
+        .hero {
+            height: 100vh;
+            min-height: 700px;
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.3)), url('https://i.imgur.com/rvWEqNY.jpeg') center/cover no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #fff;
+            padding: 0 5%;
+        }
+        .hero-content {
+            max-width: 900px;
+        }
+        .hero h1 {
+            font-size: 4.5rem;
+            margin-bottom: 1.5rem;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.8);
+        }
+        .hero p {
+            font-size: 1.6rem;
+            margin-bottom: 2rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .btn {
+            display: inline-block;
+            background: #C64E4F;
+            color: white;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.3rem;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 6px 20px rgba(198,78,79,0.3);
+        }
+        .btn:hover {
+            background: #a53d3e;
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(198,78,79,0.4);
+        }
+        .content {
+            padding: 8rem 5% 6rem;
+            max-width: 1200px;
+            margin: auto;
+            text-align: center;
+        }
+        .content h2 {
+            font-size: 3rem;
+            color: #C64E4F;
+            margin-bottom: 2rem;
+        }
+        footer {
+            text-align: center;
+            padding: 3rem;
+            background: #f0f0f0;
+            color: #666;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <img src="https://i.imgur.com/TpQXi2f.png" alt="Logo La Défense">
+            LA DÉFENSE
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="login.html">Connexion QCM</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>UE Infirmier Urgentiste Militaire</h1>
+            <p>Formation théorique et pratique pour les infirmiers urgentistes de la Composante Médicale.</p>
+            <a href="login.html" class="btn">Accéder aux QCM →</a>
+        </div>
+    </section>
+
+    <section class="content">
+        <h2>Bienvenue dans le système de validation UE</h2>
+        <p>Ce portail permet de valider les Unités d'Enseignement obligatoires pour les infirmiers urgentistes militaires.</p>
+        <p>Les QCM couvrent :</p>
+        <ul style="list-style:none; font-size:1.3rem; max-width:600px; margin:2rem auto; text-align:left;">
+            <li>✔ UAE 1 : Les Bases de l'Infirmier</li>
+            <li>✔ UAE 2 : Soins Intensifs Aide Médicale Urgente (SIAMU)</li>
+            <li>✔ UAE 3 : TCCC / TECC – Tactical Combat Casualty Care</li>
+            <li>✔ UAE 4 : Le Déploiement Extérieur / Formation OPEX</li>
+            <li>✔ UAE 5 : Les Injections</li>
+        </ul>
+        <p>Connexion requise. Maximum 3 essais par module. Score minimum : 12/20.</p>
+        <a href="login.html" class="btn">Commencer la formation →</a>
+    </section>
+
+    <footer>
+        © La Défense Belge - Composante Médicale - Tous droits réservés
+    </footer>
+
+</body>
+</html>
