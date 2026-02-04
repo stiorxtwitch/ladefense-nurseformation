@@ -95,7 +95,7 @@ document.getElementById('submit').onclick = async ()=>{
 
         let essais = (data?.essaid || 0) + 1;
 
-        if(score>=12){
+        if(score>=10){
             const { error:updateError } = await supabaseClient
                 .from('users')
                 .update({ evaluationd: score, essaid: essais })
